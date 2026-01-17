@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>介護シフト管理システム - デモ版</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        .hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 60px 20px;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 2.5rem;
+            margin-bottom: 16px;
+        }
+
+        .hero p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto 24px;
+        }
+
+        .demo-notice {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 12px 20px;
+            border-radius: 8px;
+            display: inline-block;
+            font-size: 0.9rem;
+        }
+
+        .features {
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .features h2 {
+            text-align: center;
+            font-size: 1.8rem;
+            margin-bottom: 32px;
+            color: #374151;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e5e7eb;
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+            border-color: #fb923c;
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 16px;
+        }
+
+        .feature-card h3 {
+            font-size: 1.2rem;
+            margin-bottom: 8px;
+            color: #1f2937;
+        }
+
+        .feature-card p {
+            font-size: 0.9rem;
+            color: #6b7280;
+            line-height: 1.6;
+        }
+
+        .tech-stack {
+            background: #f9fafb;
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        .tech-stack h2 {
+            margin-bottom: 20px;
+            color: #374151;
+        }
+
+        .tech-tags {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .tech-tag {
+            background: white;
+            border: 1px solid #e5e7eb;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            color: #4b5563;
+        }
+
+        footer {
+            text-align: center;
+            padding: 24px;
+            color: #9ca3af;
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="hero">
+        <h1>🏥 介護シフト管理システム</h1>
+        <p>訪問介護事業所向けのシフト管理・サービス報告システムのデモ版です。職員のシフト管理、利用者情報管理、サービス報告の記録が可能です。</p>
+        <div class="demo-notice">
+            ⚠️ これはポートフォリオ展示用のデモ版です。すべてのデータは架空のものです。
+        </div>
+    </div>
+
+    <div class="features">
+        <h2>機能一覧</h2>
+        <div class="feature-grid">
+
+            <a href="service-report/index.html" class="feature-card">
+                <div class="feature-icon">📝</div>
+                <h3>サービス報告</h3>
+                <p>訪問介護サービスの実施内容を記録・管理。バイタル記録、サービス内容、特記事項などを入力できます。</p>
+            </a>
+
+            <a href="monthly-shift/index.html" class="feature-card">
+                <div class="feature-icon">📅</div>
+                <h3>月間シフト</h3>
+                <p>月単位でのシフト管理。ドラッグ&ドロップで簡単にシフトを配置。職員の勤務時間を自動計算します。</p>
+            </a>
+
+            <a href="user-list/index.html" class="feature-card">
+                <div class="feature-icon">👥</div>
+                <h3>利用者一覧</h3>
+                <p>利用者情報の管理。サービス種別、介護度、緊急連絡先などの情報を一元管理できます。</p>
+            </a>
+
+            <a href="employee-list/index.html" class="feature-card">
+                <div class="feature-icon">👷</div>
+                <h3>社員管理</h3>
+                <p>職員情報の管理。資格情報、勤務状況、健康診断日程などを管理できます。</p>
+            </a>
+
+        </div>
+    </div>
+
+    <div class="tech-stack">
+        <h2>使用技術</h2>
+        <div class="tech-tags">
+            <span class="tech-tag">HTML5</span>
+            <span class="tech-tag">CSS3</span>
+            <span class="tech-tag">JavaScript</span>
+            <span class="tech-tag">Firebase (本番のみ)</span>
+            <span class="tech-tag">Tailwind CSS</span>
+            <span class="tech-tag">React</span>
+        </div>
+    </div>
+
+    <footer>
+        <p>© 2026 Portfolio Demo - すべてのデータは架空のものです</p>
+    </footer>
+
+</body>
+
+</html>

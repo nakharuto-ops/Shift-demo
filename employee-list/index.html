@@ -1,0 +1,1959 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>社員一覧 - 株式会社XX</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #fb923c;
+            --secondary-color: #fed7aa;
+            --accent-color: #ea580c;
+            --success-color: #fb923c;
+            --danger-color: #ea580c;
+            --light-bg: #fff9f0;
+            --main-bg: #fcfcfc;
+            --white-bg: #ffffff;
+            --font-color: #4a4a4a;
+            --border-color: #efefef;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background-color: var(--main-bg);
+            color: var(--font-color);
+        }
+
+        .main-container {
+            width: 100%;
+        }
+
+        main {
+            padding: 0.75rem;
+        }
+
+        .main-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        h1 {
+            font-size: 1.25rem;
+            margin: 0;
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            border: 1px solid var(--border-color);
+            background-color: var(--white-bg);
+            border-radius: 6px;
+            padding: 0.4rem 0.6rem;
+        }
+
+        .search-box input {
+            border: none;
+            outline: none;
+            background: none;
+        }
+
+        .btn {
+            padding: 0.5rem 0.85rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 13px;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-secondary {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        .table-wrapper {
+            overflow: auto;
+            max-height: calc(100vh - 250px);
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: var(--white-bg);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
+            border-radius: 6px;
+            min-width: 800px;
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 0.6rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+            vertical-align: middle;
+            white-space: nowrap;
+        }
+
+        .data-table thead {
+            background-color: var(--light-bg);
+        }
+
+        .data-table th {
+            font-size: 0.75rem;
+            color: #6c757d;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            background-color: var(--light-bg);
+            z-index: 10;
+        }
+
+        .data-table td {
+            font-size: 0.85rem;
+        }
+
+        .data-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .name-cell .furigana {
+            font-size: 0.75rem;
+            color: #6c757d;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.25em 0.6em;
+            font-size: 0.8rem;
+            font-weight: 700;
+            line-height: 1;
+            text-align: center;
+            white-space: nowrap;
+            vertical-align: baseline;
+            border-radius: 50rem;
+            color: #fff;
+        }
+
+        .status-active {
+            background-color: var(--success-color);
+        }
+
+        .status-inactive {
+            background-color: var(--secondary-color);
+        }
+
+        .notice-badge {
+            color: var(--danger-color);
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .badge-danger {
+            display: inline-block;
+            padding: 4px 8px;
+            background-color: #ffccdd;
+            color: #333;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: bold;
+            margin-right: 4px;
+            margin-bottom: 2px;
+        }
+
+        .notice-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            align-items: center;
+        }
+
+        .notice-cell {
+            max-width: 200px;
+            word-wrap: break-word;
+            white-space: normal;
+        }
+
+        .icon-btn {
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 0;
+            position: relative;
+        }
+
+        .icon {
+            width: 24px;
+            height: 24px;
+            fill: #495057;
+            vertical-align: middle;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity 0.3s, visibility 0.3s;
+            overflow-y: auto;
+        }
+
+        .modal-overlay.visible {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 8px;
+            width: 600px;
+            max-width: 90%;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            margin: 1rem 0;
+            max-height: 85vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 1rem;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            box-sizing: border-box;
+        }
+
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+        }
+
+        .checkbox-item input {
+            width: auto;
+            margin-right: 0.5rem;
+        }
+
+        .modal-footer {
+            text-align: right;
+            margin-top: 1.5rem;
+        }
+
+        .checkbox-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.5rem;
+            border: 1px solid var(--border-color);
+            padding: 1rem;
+            border-radius: 6px;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            width: 10px;
+            height: 10px;
+            background-color: var(--danger-color);
+            border-radius: 50%;
+            border: 2px solid white;
+        }
+
+        .top-controls {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            margin-bottom: 0.5rem;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .content-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .filter-row td {
+            padding: 0.5rem !important;
+            vertical-align: middle;
+            position: sticky;
+            top: 37px;
+            background-color: var(--light-bg);
+            z-index: 9;
+        }
+
+        .filter-row input,
+        .filter-row select {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 0.4rem;
+            border-radius: 4px;
+            border: 1px solid var(--border-color);
+            font-size: 0.85rem;
+        }
+
+        .filter-checkbox-cell {
+            text-align: center;
+        }
+
+        #calendar {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+        }
+
+        .calendar-day {
+            border: 1px solid var(--border-color);
+            padding: 8px;
+            text-align: center;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        .calendar-day.header {
+            background-color: var(--light-bg);
+            font-weight: bold;
+            cursor: default;
+        }
+
+        .calendar-day:not(.header):not(.empty):hover {
+            background-color: var(--light-bg);
+        }
+
+        .calendar-day.has-record {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: bold;
+        }
+
+        .calendar-day.selected {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 5px var(--accent-color);
+        }
+
+        .calendar-day.empty {
+            background: none;
+            border: none;
+            cursor: default;
+        }
+
+        #record-details {
+            margin-top: 1rem;
+            border-top: 1px solid var(--border-color);
+            padding-top: 1rem;
+            min-height: 50px;
+        }
+
+        .count-bar {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            margin-bottom: 0.25rem;
+            padding: 0.4rem 0.6rem;
+            background-color: var(--light-bg);
+            border-radius: 4px;
+        }
+
+        .pagination-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem;
+            background-color: var(--light-bg);
+            border-radius: 4px;
+            margin-top: 0.25rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .pagination-info {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .pagination-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .pagination-controls button {
+            padding: 6px 12px;
+            font-size: 13px;
+        }
+
+        .page-numbers {
+            display: flex;
+            gap: 5px;
+            align-items: center;
+        }
+
+        .page-btn {
+            padding: 6px 10px;
+            border: 1px solid var(--border-color);
+            background-color: white;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+
+        .page-btn.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .page-btn:hover:not(.active) {
+            background-color: #f8f9fa;
+        }
+
+        .items-per-page {
+            font-size: 13px;
+            color: #666;
+        }
+
+        .items-per-page select {
+            padding: 4px 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 13px;
+            margin-left: 8px;
+        }
+
+        @media (max-width: 768px) {
+            main {
+                padding: 1rem;
+            }
+
+            .top-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .content-actions {
+                justify-content: flex-end;
+            }
+
+            .form-row {
+                flex-direction: column;
+                gap: 0;
+            }
+
+            .form-row .form-group {
+                margin-bottom: 1rem;
+            }
+
+            .checkbox-container {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-content {
+                padding: 1.5rem;
+            }
+
+            .pagination-container {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="main-container">
+        <main>
+            <div class="main-header">
+                <h1>社員一覧</h1>
+                <div class="search-box">
+                    <input type="text" id="top-search-box" placeholder="社員名で検索…">
+                </div>
+            </div>
+
+            <div class="top-controls">
+                <div class="content-actions">
+                    <button class="btn btn-primary" id="new-employee-btn">新規登録</button>
+                    <button class="btn btn-secondary" id="view-history-btn">履歴を確認</button>
+                </div>
+            </div>
+
+            <!-- 件数表示バー -->
+            <div class="count-bar">
+                <div id="listCount" style="font-size: 14px; color: #666; font-weight: bold;">
+                    表示中: 0件 / 総数: 0件
+                </div>
+            </div>
+
+            <!-- 上部ページネーション -->
+            <div id="pagination-container-top" class="pagination-container">
+                <div class="pagination-info">
+                    <span id="pagination-info-top">1-50 / 100件</span>
+                </div>
+                <div class="pagination-controls">
+                    <button id="first-page-btn-top" class="btn btn-secondary" title="最初のページ">
+                        <i class="fas fa-angle-double-left"></i>
+                    </button>
+                    <button id="prev-page-btn-top" class="btn btn-secondary" title="前のページ">
+                        <i class="fas fa-angle-left"></i> 前へ
+                    </button>
+                    <div id="page-numbers-top" class="page-numbers">
+                        <!-- ページ番号ボタンがここに動的に生成されます -->
+                    </div>
+                    <button id="next-page-btn-top" class="btn btn-secondary" title="次のページ">
+                        次へ <i class="fas fa-angle-right"></i>
+                    </button>
+                    <button id="last-page-btn-top" class="btn btn-secondary" title="最後のページ">
+                        <i class="fas fa-angle-double-right"></i>
+                    </button>
+                </div>
+                <div class="items-per-page">
+                    <label for="items-per-page-select-top">表示件数:</label>
+                    <select id="items-per-page-select-top">
+                        <option value="25">25件</option>
+                        <option value="50" selected>50件</option>
+                        <option value="100">100件</option>
+                        <option value="200">200件</option>
+                        <option value="500">500件</option>
+                        <option value="1000">1000件</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="table-wrapper">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>社員番号</th>
+                            <th>書類</th>
+                            <th>名前 (フリガナ)</th>
+                            <th>役職</th>
+                            <th>在籍情報</th>
+                            <th>住所</th>
+                            <th>お知らせ</th>
+                            <th>基本情報</th>
+                            <th>初回書類</th>
+                            <th>担当者情報</th>
+                        </tr>
+                        <tr class="filter-row">
+                            <td><input type="text" id="filter-id" placeholder="番号"></td>
+                            <td></td>
+                            <td><input type="text" id="filter-name" placeholder="名前"></td>
+                            <td><select id="filter-position"></select></td>
+                            <td><select id="filter-status"></select></td>
+                            <td><select id="filter-address"></select></td>
+                            <td><select id="filter-notice"></select></td>
+                            <td colspan="3"></td>
+                        </tr>
+                    </thead>
+                    <tbody id="employee-table-body"></tbody>
+                </table>
+            </div>
+
+            <!-- 下部ページネーション -->
+            <div id="pagination-container" class="pagination-container">
+                <div class="pagination-info">
+                    <span id="pagination-info">1-50 / 100件</span>
+                </div>
+                <div class="pagination-controls">
+                    <button id="first-page-btn" class="btn btn-secondary" title="最初のページ">
+                        <i class="fas fa-angle-double-left"></i>
+                    </button>
+                    <button id="prev-page-btn" class="btn btn-secondary" title="前のページ">
+                        <i class="fas fa-angle-left"></i> 前へ
+                    </button>
+                    <div id="page-numbers" class="page-numbers">
+                        <!-- ページ番号ボタンがここに動的に生成されます -->
+                    </div>
+                    <button id="next-page-btn" class="btn btn-secondary" title="次のページ">
+                        次へ <i class="fas fa-angle-right"></i>
+                    </button>
+                    <button id="last-page-btn" class="btn btn-secondary" title="最後のページ">
+                        <i class="fas fa-angle-double-right"></i>
+                    </button>
+                </div>
+                <div class="items-per-page">
+                    <label for="items-per-page-select">表示件数:</label>
+                    <select id="items-per-page-select">
+                        <option value="25">25件</option>
+                        <option value="50" selected>50件</option>
+                        <option value="100">100件</option>
+                        <option value="200">200件</option>
+                        <option value="500">500件</option>
+                        <option value="1000">1000件</option>
+                    </select>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div class="modal-overlay" id="employee-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modal-title">新規社員登録</h2>
+                <button class="close-btn" id="close-employee-modal-btn">&times;</button>
+            </div>
+            <form id="employee-form">
+                <input type="hidden" id="employee-id-original">
+                <div class="form-row">
+                    <div class="form-group"><label for="employee-id-display">社員番号</label><input type="text"
+                            id="employee-id-display"></div>
+                    <div class="form-group"><label for="healthCheckupDate">健康診断日程（前回）</label><input type="date"
+                            id="healthCheckupDate"></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label for="name">名前</label><input type="text" id="name" required></div>
+                    <div class="form-group"><label for="furigana">フリガナ</label><input type="text" id="furigana" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label for="position">役職</label><select id="position">
+                            <option value="">選択してください</option>
+                            <option value="ヘルパー">ヘルパー</option>
+                            <option value="本部">本部</option>
+                            <option value="課長">課長</option>
+                            <option value="サ責">サ責</option>
+                            <option value="社員">社員</option>
+                        </select></div>
+                    <div class="form-group"><label for="enrollmentStatus">在籍情報</label><select id="enrollmentStatus">
+                            <option value="在職">在職</option>
+                            <option value="休職">休職</option>
+                            <option value="退職">退職</option>
+                            <option value="変更">変更</option>
+                            <option value="入社前">入社前</option>
+                        </select></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group" style="flex: 0.5;"><label for="zipCode">郵便番号</label><input type="text"
+                            id="zipCode"></div>
+                    <div class="form-group" style="flex: 1.5;"><label for="address">住所</label><input type="text"
+                            id="address"></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label for="birthDate">生年月日</label><input type="date" id="birthDate"></div>
+                    <div class="form-group"><label for="gender">性別</label><select id="gender">
+                            <option value="男">男</option>
+                            <option value="女">女</option>
+                        </select></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label for="hireDate">入社日</label><input type="date" id="hireDate"></div>
+                    <div class="form-group"><label>その他</label>
+                        <div class="checkbox-item" style="margin-top: 0.5rem;"><input type="checkbox"
+                                id="systemicMobilitySupport"><label for="systemicMobilitySupport">全身性移動</label></div>
+                    </div>
+                </div>
+                <div class="form-group"><label for="qualifications">保有資格（複数選択可）</label><select id="qualifications"
+                        multiple>
+                        <option value="初任者">初任者</option>
+                        <option value="実務者">実務者</option>
+                        <option value="介福">介福</option>
+                        <option value="准看護士">准看護士</option>
+                        <option value="看護師">看護師</option>
+                    </select></div>
+                <div class="form-row">
+                    <div class="form-group"><label for="socialInsuranceType">社保</label><select id="socialInsuranceType">
+                            <option value="雇用保険">雇用保険</option>
+                            <option value="社保・雇用">社保・雇用</option>
+                            <option value="社保のみ">社保のみ</option>
+                        </select></div>
+                    <div class="form-group"><label for="insuranceNumber">被保険者番号</label><input type="text"
+                            id="insuranceNumber"></div>
+                </div>
+                <div class="form-group"><label for="notice">お知らせ（任意）</label><textarea id="notice" rows="2"
+                        style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 6px; box-sizing: border-box; font-family: inherit; resize: vertical;"
+                        placeholder="例: 研修予定、業務連絡など"></textarea></div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="cancel-employee-btn">キャンセル</button>
+                    <button type="submit" class="btn btn-primary" id="submit-employee-btn">登録する</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="documents-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="documents-modal-title">初回書類確認</h2>
+                <button class="close-btn" id="close-documents-modal-btn">&times;</button>
+            </div>
+            <form id="documents-form">
+                <input type="hidden" id="documents-employee-id">
+                <div class="form-group"><label for="drive-link">書類保管Driveリンク</label><input type="url" id="drive-link"
+                        placeholder="https://docs.google.com/..."></div>
+                <hr>
+                <div class="form-group"><label for="bank-code">金融機関コード</label><input type="text" id="bank-code"></div>
+                <div class="form-group"><label for="bank-name">銀行名</label><input type="text" id="bank-name"></div>
+                <div class="form-group"><label for="branch-code">支店コード</label><input type="text" id="branch-code"></div>
+                <div class="form-group"><label for="branch-name">支店</label><input type="text" id="branch-name"></div>
+                <div class="form-group"><label for="account-info">種別/口座番号</label><input type="text" id="account-info">
+                </div>
+                <div class="form-group"><label for="income-category">所得別区分確認</label><select id="income-category">
+                        <option value="103万以下">103万以下（所得税なし）</option>
+                        <option value="103万以上">103万以上</option>
+                        <option value="ダブルワーク">ダブルワーク</option>
+                    </select></div>
+                <div class="form-group"><label>提出書類チェックリスト</label>
+                    <div class="checkbox-container" id="checklist-container"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="cancel-documents-btn">キャンセル</button>
+                    <button type="submit" class="btn btn-primary" id="documents-submit-btn">更新する</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="history-modal">
+        <div class="modal-content" style="width: 800px; max-width: 95%;">
+            <div class="modal-header">
+                <h2>変更履歴</h2>
+                <button class="close-btn" id="close-history-modal-btn">&times;</button>
+            </div>
+            <div class="table-wrapper">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>日時</th>
+                            <th>社員名</th>
+                            <th>変更項目</th>
+                            <th>変更前</th>
+                            <th>変更後</th>
+                        </tr>
+                    </thead>
+                    <tbody id="history-table-body"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="staff-info-modal">
+        <div class="modal-content" style="width: 800px; max-width: 95%;">
+            <div class="modal-header">
+                <h2 id="staff-info-modal-title">担当者情報</h2>
+                <button class="close-btn" id="close-staff-info-modal-btn">&times;</button>
+            </div>
+            <form id="staff-info-form">
+                <input type="hidden" id="staff-info-employee-id">
+
+                <h3
+                    style="margin-top: 0; margin-bottom: 1rem; border-bottom: 2px solid #fed7aa; padding-bottom: 0.5rem; color: #ea580c;">
+                    出勤状況</h3>
+                <div class="form-group">
+                    <div style="display: grid; grid-template-columns: 100px 1fr; gap: 0.75rem; align-items: center;">
+                        <label>月曜日</label>
+                        <input type="text" id="schedule-mon" placeholder="例: 終日OK、8:30~16:00">
+                        <label>火曜日</label>
+                        <input type="text" id="schedule-tue" placeholder="例: 終日OK、8:30~16:00">
+                        <label>水曜日</label>
+                        <input type="text" id="schedule-wed" placeholder="例: 終日OK、8:30~16:00">
+                        <label>木曜日</label>
+                        <input type="text" id="schedule-thu" placeholder="例: 終日OK、8:30~16:00">
+                        <label>金曜日</label>
+                        <input type="text" id="schedule-fri" placeholder="例: 終日OK、8:30~16:00">
+                        <label>土曜日</label>
+                        <input type="text" id="schedule-sat" placeholder="例: 終日OK、8:30~16:00">
+                        <label>日曜日</label>
+                        <input type="text" id="schedule-sun" placeholder="例: 終日OK、8:30~16:00">
+                    </div>
+                </div>
+
+                <h3
+                    style="margin-top: 1.5rem; margin-bottom: 1rem; border-bottom: 2px solid #fed7aa; padding-bottom: 0.5rem; color: #ea580c;">
+                    対応可能サービス</h3>
+                <div class="form-group">
+                    <div
+                        style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.5rem; border: 1px solid var(--border-color); padding: 1rem; border-radius: 6px;">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="service-physical" name="service-physical">
+                            <label for="service-physical">身体介護</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="service-housework" name="service-housework">
+                            <label for="service-housework">家事援助</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="service-transport" name="service-transport">
+                            <label for="service-transport">移動支援</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="service-accompany" name="service-accompany">
+                            <label for="service-accompany">同行援護</label>
+                        </div>
+                    </div>
+                </div>
+
+                <h3
+                    style="margin-top: 1.5rem; margin-bottom: 1rem; border-bottom: 2px solid #fed7aa; padding-bottom: 0.5rem; color: #ea580c;">
+                    移動手段</h3>
+                <div class="form-group">
+                    <div
+                        style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; border: 1px solid var(--border-color); padding: 1rem; border-radius: 6px;">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="transport-bike" name="transport-bike">
+                            <label for="transport-bike">バイク</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="transport-car" name="transport-car">
+                            <label for="transport-car">車</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="transport-bicycle" name="transport-bicycle">
+                            <label for="transport-bicycle">自転車</label>
+                        </div>
+                    </div>
+                </div>
+
+                <h3
+                    style="margin-top: 1.5rem; margin-bottom: 1rem; border-bottom: 2px solid #fed7aa; padding-bottom: 0.5rem; color: #ea580c;">
+                    備考</h3>
+                <div class="form-group">
+                    <textarea id="staff-notes" rows="4"
+                        style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 6px; box-sizing: border-box; font-family: inherit; resize: vertical;"
+                        placeholder="その他の情報を入力してください"></textarea>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="cancel-staff-info-btn">キャンセル</button>
+                    <button type="submit" class="btn btn-primary" id="staff-info-submit-btn">更新する</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- DEMO VERSION: Firebase SDK無効化 - ダミーデータを使用 -->
+    <!-- デモバナー -->
+    <div
+        style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 10px 20px; text-align: center; font-weight: 600; position: fixed; top: 0; left: 0; right: 0; z-index: 9999;">
+        ⚠️ デモ版 - すべてのデータは架空のものです。実際のFirebaseには接続していません。
+    </div>
+    <style>
+        body {
+            padding-top: 45px !important;
+        }
+    </style>
+
+    <script>
+        // DEMO VERSION: Mock Firebase - サンプルデータを返すモック
+        console.log('[DEMO] Firebase SDKをモックに置換しました');
+
+        // ダミー社員データ
+        const DEMO_EMPLOYEES = [
+            { employeeId: '0001', name: '田中 太郎', furigana: 'タナカ タロウ', position: 'サ責', enrollmentStatus: '在職', healthCheckupDate: '2025-11-15', zipCode: '100-0001', address: '東京都サンプル区デモ町1-1-1', birthDate: '1975-04-15', gender: '男', hireDate: '2015-04-01', systemicMobilitySupport: true, qualifications: ['介福', '実務者'], socialInsuranceType: '社保・雇用', insuranceNumber: '12345678', notice: '', initialDocuments: { driveLink: '#', bankCode: '0001', bankName: 'デモ銀行', branchCode: '001', branchName: '中央支店', accountInfo: '普通 1234567', incomeCategory: '103万以上', checklist: { '免許証コピー': true, '履歴書': true, '労働者名簿': true, '社員証': true, '有期雇用契約書': true } }, staffInfo: { schedule: { mon: '終日OK', tue: '終日OK', wed: '終日OK', thu: '終日OK', fri: '終日OK', sat: '', sun: '' }, services: ['身体介護', '家事援助', '移動支援'], transport: ['車'], notes: '土日は休み希望' } },
+            { employeeId: '0002', name: '佐藤 花子', furigana: 'サトウ ハナコ', position: 'ヘルパー', enrollmentStatus: '在職', healthCheckupDate: '2025-10-20', zipCode: '100-0002', address: '東京都サンプル区デモ町2-2-2', birthDate: '1982-08-22', gender: '女', hireDate: '2018-06-01', systemicMobilitySupport: false, qualifications: ['介福', '初任者'], socialInsuranceType: '社保・雇用', insuranceNumber: '87654321', notice: '', initialDocuments: { driveLink: '#', bankCode: '0002', bankName: 'サンプル銀行', branchCode: '002', branchName: '西支店', accountInfo: '普通 7654321', incomeCategory: '103万以下', checklist: { '免許証コピー': true, '履歴書': true, '有期雇用契約書': true } }, staffInfo: { schedule: { mon: '8:30~16:00', tue: '8:30~16:00', wed: '', thu: '8:30~16:00', fri: '8:30~16:00', sat: '8:30~12:00', sun: '' }, services: ['家事援助', '同行援護'], transport: ['自転車'], notes: '水曜日は休み' } },
+            { employeeId: '0003', name: '鈴木 一郎', furigana: 'スズキ イチロウ', position: 'ヘルパー', enrollmentStatus: '在職', healthCheckupDate: '2025-11-05', zipCode: '100-0003', address: '東京都サンプル区デモ町3-3-3', birthDate: '1990-03-10', gender: '男', hireDate: '2020-04-01', systemicMobilitySupport: true, qualifications: ['初任者'], socialInsuranceType: '雇用保険', insuranceNumber: '', notice: '同行研修中', initialDocuments: { driveLink: '', checklist: {} }, staffInfo: { schedule: { mon: '終日OK', tue: '終日OK', wed: '終日OK', thu: '', fri: '終日OK', sat: '', sun: '' }, services: ['身体介護'], transport: ['バイク'], notes: '' } },
+            { employeeId: '0004', name: '高橋 美咲', furigana: 'タカハシ ミサキ', position: 'ヘルパー', enrollmentStatus: '在職', healthCheckupDate: '2025-11-10', zipCode: '100-0004', address: '東京都サンプル区デモ町4-4-4', birthDate: '1988-12-05', gender: '女', hireDate: '2021-09-01', systemicMobilitySupport: false, qualifications: ['実務者', '初任者'], socialInsuranceType: '雇用保険', insuranceNumber: '11112222', notice: '', initialDocuments: { driveLink: '#', bankCode: '0003', bankName: 'テスト銀行', branchCode: '003', branchName: '東支店', accountInfo: '普通 1111222', incomeCategory: '103万以下', checklist: { '免許証コピー': true, '履歴書': true } }, staffInfo: { schedule: { mon: '9:00~17:00', tue: '9:00~17:00', wed: '9:00~17:00', thu: '9:00~17:00', fri: '9:00~17:00', sat: '', sun: '' }, services: ['身体介護', '家事援助'], transport: ['自転車', '車'], notes: '' } },
+            { employeeId: '0005', name: '山田 健太', furigana: 'ヤマダ ケンタ', position: 'ヘルパー', enrollmentStatus: '休職', healthCheckupDate: '2025-06-01', zipCode: '100-0005', address: '東京都サンプル区デモ町5-5-5', birthDate: '1995-07-20', gender: '男', hireDate: '2023-04-01', systemicMobilitySupport: false, qualifications: ['初任者'], socialInsuranceType: '雇用保険', insuranceNumber: '', notice: '休職中', initialDocuments: { driveLink: '', checklist: {} }, staffInfo: { schedule: { mon: '', tue: '', wed: '', thu: '', fri: '', sat: '', sun: '' }, services: [], transport: [], notes: '休職中のため対応不可' } }
+        ];
+
+        // Mock firebase オブジェクト
+        window.firebase = {
+            apps: [],
+            initializeApp: function () { return {}; },
+            firestore: function () { return window.mockFirestore; }
+        };
+
+        // Mock Firestore
+        window.mockFirestore = {
+            collection: function (name) {
+                return {
+                    get: function () {
+                        return Promise.resolve({
+                            empty: false,
+                            docs: DEMO_EMPLOYEES.map((emp, i) => ({
+                                id: 'demo-' + emp.employeeId,
+                                exists: true,
+                                data: function () { return emp; },
+                                ref: { id: 'demo-' + emp.employeeId }
+                            })),
+                            forEach: function (cb) {
+                                DEMO_EMPLOYEES.forEach((emp, i) => cb({
+                                    id: 'demo-' + emp.employeeId,
+                                    data: function () { return emp; }
+                                }));
+                            }
+                        });
+                    },
+                    doc: function (id) {
+                        return {
+                            get: function () {
+                                const emp = DEMO_EMPLOYEES.find(e => e.employeeId === id);
+                                return Promise.resolve({
+                                    exists: !!emp,
+                                    data: function () { return emp; },
+                                    id: id
+                                });
+                            },
+                            set: function (data) {
+                                console.log('[DEMO] Firestore set (無効化):', data);
+                                return Promise.resolve();
+                            },
+                            update: function (data) {
+                                console.log('[DEMO] Firestore update (無効化):', data);
+                                return Promise.resolve();
+                            }
+                        };
+                    },
+                    add: function (data) {
+                        console.log('[DEMO] Firestore add (無効化):', data);
+                        return Promise.resolve({ id: 'new-demo-' + Date.now() });
+                    }
+                };
+            }
+        };
+
+        // firestoreUtils mock
+        window.firestoreUtils = {
+            collection: (db, path) => window.mockFirestore.collection(path),
+            getDocs: async (query) => {
+                return {
+                    empty: false,
+                    size: DEMO_EMPLOYEES.length,
+                    docs: DEMO_EMPLOYEES.map((emp, i) => ({
+                        id: 'demo-' + emp.employeeId,
+                        exists: () => true,
+                        data: () => emp,
+                        ref: { id: 'demo-' + emp.employeeId }
+                    })),
+                    forEach: (callback) => DEMO_EMPLOYEES.forEach((emp, i) => callback({
+                        id: 'demo-' + emp.employeeId,
+                        exists: () => true,
+                        data: () => emp,
+                        ref: { id: 'demo-' + emp.employeeId }
+                    }))
+                };
+            },
+            getDoc: async (ref) => {
+                return { exists: () => true, data: () => ({}), id: ref.id || 'unknown', ref: ref };
+            },
+            addDoc: (ref, data) => {
+                console.log('[DEMO] addDoc (無効化):', data);
+                return Promise.resolve({ id: 'new-demo-' + Date.now() });
+            },
+            updateDoc: (ref, data) => {
+                console.log('[DEMO] updateDoc (無効化):', data);
+                return Promise.resolve();
+            },
+            doc: (db, path, ...args) => {
+                return { id: args[0] || path, update: () => Promise.resolve() };
+            },
+            deleteDoc: (ref) => {
+                console.log('[DEMO] deleteDoc (無効化)');
+                return Promise.resolve();
+            },
+            onSnapshot: (ref, callback) => {
+                // 初回のみダミーデータを返す
+                setTimeout(() => {
+                    callback({
+                        docs: DEMO_EMPLOYEES.map((emp, i) => ({
+                            id: 'demo-' + emp.employeeId,
+                            data: () => emp
+                        })),
+                        forEach: (cb) => DEMO_EMPLOYEES.forEach((emp, i) => cb({
+                            id: 'demo-' + emp.employeeId,
+                            data: () => emp
+                        }))
+                    });
+                }, 100);
+                return () => { }; // unsubscribe
+            },
+            setDoc: (ref, data) => {
+                console.log('[DEMO] setDoc (無効化):', data);
+                return Promise.resolve();
+            },
+            deleteField: () => '__DELETE__'
+        };
+
+        // グローバルに公開
+        window.firebaseDB = window.mockFirestore;
+    </script>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const checklistItems = ['免許証コピー', '個人情報保護新', '従業員個人情報利用', '有期雇用契約書', '無期雇用契約書', '登録雇用契約書', '高齢雇用契約書', '資格書', '携帯誓約書', 'バイク誓約書', '身元保証書', '物品誓約書', '入社連絡票', '履歴書', '労働者名簿', '社員証', '緊急通報設定', '同行研修'];
+            let changeHistory = [];
+            let employees = [];
+
+            // 画面データをFirestore形式に変換する関数
+            const convertToFirestoreData = (employeeData) => {
+                // チェックリストのマッピング（画面表示名 → Firestoreフィールド名）
+                const reverseChecklistMapping = {
+                    '免許証コピー': 'checklist_licence',
+                    '個人情報保護新': 'checklist_personalInfo`',
+                    '従業員個人情報利用': 'checklist_employeeInfo`',
+                    '有期雇用契約書': 'checklist_fixedTermContract`',
+                    '無期雇用契約書': 'checklist_permanentContract',
+                    '登録雇用契約書': 'checklist_registeredContract` "',
+                    '高齢雇用契約書': 'checklist_seniorContract',
+                    '資格書': 'checklist_qualificationCopy`',
+                    '携帯誓約書': 'checklist_mobilePledge`',
+                    'バイク誓約書': 'checklist_bikePledge`',
+                    '身元保証書': 'checklist_guarantor`',
+                    '物品誓約書': 'checklist_equipmentPledge`',
+                    '入社連絡票': 'checklist_joiningForm`',
+                    '履歴書': 'checklist_resume`',
+                    '労働者名簿': 'checklist_employeeRegister`',
+                    '社員証': 'checklist_employeeIdCard`',
+                    '緊急通報設定': 'checklist_emergencyCall`',
+                    '同行研修': 'checklist_onboardingTraining`'
+                };
+
+                // 基本データをFirestore形式に変換
+                const firestoreData = {
+                    employeeId: employeeData.employeeId,
+                    name: employeeData.name,
+                    furigana: employeeData.furigana,
+                    position: employeeData.position,
+                    enrollmentStatus: employeeData.enrollmentStatus,
+                    healthCheckupDate: employeeData.healthCheckupDate || '',
+                    zipCode: employeeData.zipCode || '',
+                    address: employeeData.address,
+                    birthDate: employeeData.birthDate || '',
+                    gender: employeeData.gender,
+                    hireDate: employeeData.hireDate || '',
+                    systemicMobilitySupport: employeeData.systemicMobilitySupport || false,
+                    qualifications: employeeData.qualifications,
+                    socialInsuranceType: employeeData.socialInsuranceType || '雇用保険',
+                    insuranceNumber: employeeData.insuranceNumber,
+                    notice: employeeData.notice || '',
+                    incomeCategory: employeeData.initialDocuments?.incomeCategory || '103万以下',
+                    driveLink: employeeData.initialDocuments?.driveLink || '',
+                    bankCode: employeeData.initialDocuments?.bankCode || '',
+                    bankName: employeeData.initialDocuments?.bankName || '',
+                    branchCode: employeeData.initialDocuments?.branchCode || '',
+                    branchName: employeeData.initialDocuments?.branchName || '',
+                    accountInfo: employeeData.initialDocuments?.accountInfo || ''
+                };
+
+                // チェックリストを個別フィールドに展開
+                const checklist = employeeData.initialDocuments?.checklist || {};
+                Object.keys(reverseChecklistMapping).forEach(displayName => {
+                    const firebaseKey = reverseChecklistMapping[displayName];
+                    firestoreData[firebaseKey] = checklist[displayName] || false;
+                });
+
+                return firestoreData;
+            };
+
+            // Firestoreのデータを画面表示用に変換する関数
+            const convertFirestoreData = (data) => {
+                // 日付フィールドの処理（文字列またはTimestamp型に対応）
+                const convertDateField = (dateValue) => {
+                    if (!dateValue) return '';
+                    // 既に文字列の場合はそのまま返す
+                    if (typeof dateValue === 'string') return dateValue;
+                    // Timestamp型の場合は変換（互換性のため）
+                    if (dateValue.toDate) {
+                        return dateValue.toDate().toISOString().split('T')[0];
+                    }
+                    if (dateValue.seconds) {
+                        return new Date(dateValue.seconds * 1000).toISOString().split('T')[0];
+                    }
+                    return '';
+                };
+
+                // フィールド名の柔軟なマッピング（0001形式 または 他の形式）
+                const getField = (newField, oldField) => {
+                    return data[newField] !== undefined ? data[newField] : data[oldField];
+                };
+
+                // チェックリストのマッピング
+                const checklistMapping = {
+                    'licenseCopy': '免許証コピー',
+                    'privacyProtectionNew': '個人情報保護新',
+                    'personalInfoUsage': '従業員個人情報利用',
+                    'fixedTermContract': '有期雇用契約書',
+                    'indefiniteContract': '無期雇用契約書',
+                    'registrationContract': '登録雇用契約書',
+                    'elderlyContract': '高齢雇用契約書',
+                    'qualificationCertificate': '資格書',
+                    'mobilePhonePledg': '携帯誓約書',
+                    'motorcyclePledge': 'バイク誓約書',
+                    'identityGuarantee': '身元保証書',
+                    'propertyPledge': '物品誓約書',
+                    'entryNotification': '入社連絡票',
+                    'resume': '履歴書',
+                    'employeeRegistry': '労働者名簿',
+                    'employeeCard': '社員証',
+                    'emergencyContactSetup': '緊急通報設定',
+                    'accompanyingTraining': '同行研修'
+                };
+
+                // チェックリストオブジェクトを構築
+                const checklist = {};
+                Object.keys(checklistMapping).forEach(firebaseKey => {
+                    const displayName = checklistMapping[firebaseKey];
+                    if (data[firebaseKey] !== undefined) {
+                        checklist[displayName] = data[firebaseKey];
+                    }
+                });
+
+                // 変換されたデータを返す（両方のフィールド名に対応）
+                return {
+                    employeeId: getField('employeeId', 'employeeNumber') || '',
+                    name: data.name || '',
+                    furigana: data.furigana || '',
+                    position: data.position || '',
+                    enrollmentStatus: getField('enrollmentStatus', 'status') || '',
+                    healthCheckupDate: convertDateField(getField('healthCheckupDate', 'lastHealthCheckDate')),
+                    zipCode: getField('zipCode', 'postalCode') || '',
+                    address: data.address || '',
+                    birthDate: convertDateField(data.birthDate),
+                    gender: data.gender || '男',
+                    hireDate: convertDateField(data.hireDate),
+                    systemicMobilitySupport: getField('systemicMobilitySupport', 'fullBodyMobility') || false,
+                    qualifications: Array.isArray(data.qualifications) ? data.qualifications : [],
+                    socialInsuranceType: getField('socialInsuranceType', 'socialInsurance') || '雇用保険',
+                    insuranceNumber: getField('insuranceNumber', 'insuredNumber') || '',
+                    notice: getField('notice', 'notes') || '',
+                    initialDocuments: {
+                        driveLink: data.driveLink || '',
+                        bankCode: data.bankCode || '',
+                        bankName: data.bankName || '',
+                        branchCode: data.branchCode || '',
+                        branchName: data.branchName || '',
+                        accountInfo: getField('accountInfo', 'accountType') || '',
+                        incomeCategory: data.incomeCategory || '103万以下',
+                        checklist: checklist
+                    },
+                    staffInfo: data.staffInfo || {
+                        schedule: { mon: '', tue: '', wed: '', thu: '', fri: '', sat: '', sun: '' },
+                        services: [],
+                        transport: [],
+                        notes: ''
+                    }
+                };
+            };
+
+            // Firestoreからデータを読み込む関数
+            const loadEmployeesFromFirestore = async () => {
+                try {
+                    const { collection, getDocs } = window.firestoreUtils;
+                    const db = window.firebaseDB;
+
+                    const querySnapshot = await getDocs(collection(db, 'uses'));
+                    employees = [];
+                    querySnapshot.forEach((doc) => {
+                        const data = doc.data();
+                        console.log('読み込んだFirestoreデータ:', doc.id, data); // デバッグ用
+
+                        const convertedData = convertFirestoreData(data);
+                        console.log('変換後のデータ:', convertedData); // デバッグ用
+
+                        employees.push({
+                            firestoreId: doc.id, // Firestoreのドキュメント ID を保存
+                            ...convertedData
+                        });
+                    });
+
+                    console.log(`Firestoreから${employees.length}件の社員データを読み込みました`);
+                    console.log('全社員データ:', employees); // デバッグ用
+                    populateFilters();
+                    renderTable();
+                } catch (error) {
+                    console.error('Firestoreからのデータ読み込みエラー:', error);
+                    // エラーの場合はサンプルデータを使用
+                    employees = [
+                        { employeeId: '0001', name: '青山 新一', furigana: 'アオヤマ シンイチ', position: '部長', enrollmentStatus: '在職', healthCheckupDate: '2024-11-15', zipCode: '578-0901', address: '東大阪市旭町1-101', birthDate: '1980-04-15', gender: '男', hireDate: '2010-04-01', systemicMobilitySupport: true, qualifications: ['介福', '実務者'], socialInsuranceType: '社保・雇用', insuranceNumber: '12345678', notice: '', initialDocuments: { driveLink: 'https://docs.google.com/folder/d/sample1', bankCode: '1234', bankName: 'みらい銀行', branchCode: '567', branchName: '中央支店', accountInfo: '普通 111222', incomeCategory: '103万以上', checklist: { '免許証コピー': true, '履歴書': true, '労働者名簿': true, '社員証': true, '有期雇用契約書': true } }, staffInfo: { schedule: { mon: '終日OK', tue: '終日OK', wed: '終日OK', thu: '終日OK', fri: '終日OK', sat: '', sun: '' }, services: ['身体介護', '家事援助', '移動支援'], transport: ['車'], notes: '土日は休み希望' } },
+                        { employeeId: '0002', name: '秋田 理智', furigana: 'アキタ リサト', position: '課長', enrollmentStatus: '在職', healthCheckupDate: '', zipCode: '581-0013', address: '八尾市曙川町2-1', birthDate: '1992-08-20', gender: '女', hireDate: '2018-04-01', systemicMobilitySupport: false, qualifications: ['初任者'], socialInsuranceType: '雇用保険', insuranceNumber: '87654321', notice: '研修予定', initialDocuments: { driveLink: '', bankCode: '5678', bankName: 'さくら銀行', branchCode: '123', branchName: '西支店', accountInfo: '普通 333444', incomeCategory: '103万以下', checklist: { '免許証コピー': true, '履歴書': true, '有期雇用契約書': true } }, staffInfo: { schedule: { mon: '8:30~16:00', tue: '8:30~16:00', wed: '', thu: '8:30~16:00', fri: '8:30~16:00', sat: '8:30~12:00', sun: '' }, services: ['家事援助', '同行援護'], transport: ['自転車', 'バイク'], notes: '水曜日は休み' } },
+                        { employeeId: '0003', name: '石川 雄大', furigana: 'イシカワ ユウダイ', position: '課長', enrollmentStatus: '休職', healthCheckupDate: '2025-03-01', zipCode: '578-0901', address: '東大阪市加納7-1-1', birthDate: '1988-11-01', gender: '男', hireDate: '2015-09-01', systemicMobilitySupport: false, qualifications: ['実務者'], socialInsuranceType: '社保・雇用', insuranceNumber: '', notice: '', initialDocuments: { driveLink: 'https://docs.google.com/folder/d/sample3', checklist: {} }, staffInfo: { schedule: { mon: '', tue: '', wed: '', thu: '', fri: '', sat: '', sun: '' }, services: [], transport: [], notes: '現在休職中' } }
+                    ];
+                    populateFilters();
+                    renderTable();
+                }
+            };
+
+            // リアルタイムリスナーを設定
+            const setupRealtimeListener = () => {
+                try {
+                    const { collection, onSnapshot } = window.firestoreUtils;
+                    const db = window.firebaseDB;
+
+                    onSnapshot(collection(db, 'uses'), (snapshot) => {
+                        employees = [];
+                        snapshot.forEach((doc) => {
+                            const data = doc.data();
+                            const convertedData = convertFirestoreData(data);
+                            employees.push({
+                                firestoreId: doc.id,
+                                ...convertedData
+                            });
+                        });
+                        console.log('リアルタイム更新: データが更新されました');
+                        populateFilters();
+                        renderTable();
+                    });
+                } catch (error) {
+                    console.error('リアルタイムリスナーの設定エラー:', error);
+                }
+            };
+
+            let currentFilters = { position: '', status: '', notice: '', employeeId: '', name: '', address: '' };
+            let currentPage = 1;
+            let itemsPerPage = 50;
+            let filteredEmployees = [];
+
+            const tableBody = document.getElementById('employee-table-body');
+            const employeeModal = document.getElementById('employee-modal');
+            const employeeForm = document.getElementById('employee-form');
+            const documentsModal = document.getElementById('documents-modal');
+            const documentsForm = document.getElementById('documents-form');
+            const historyModal = document.getElementById('history-modal');
+            const checklistContainer = document.getElementById('checklist-container');
+
+            const topSearchBox = document.getElementById('top-search-box');
+            const filterIdInput = document.getElementById('filter-id');
+            const filterNameInput = document.getElementById('filter-name');
+            const filterAddressSelect = document.getElementById('filter-address');
+            const filterPositionSelect = document.getElementById('filter-position');
+            const filterStatusSelect = document.getElementById('filter-status');
+            const filterNoticeSelect = document.getElementById('filter-notice');
+
+            const fieldLabels = { employeeId: '社員番号', name: '名前', furigana: 'フリガナ', position: '役職', enrollmentStatus: '在籍情報', healthCheckupDate: '健康診断日程', zipCode: '郵便番号', address: '住所', birthDate: '生年月日', gender: '性別', hireDate: '入社日', systemicMobilitySupport: '全身性移動', qualifications: '保有資格', socialInsuranceType: '社保', insuranceNumber: '被保険者番号' };
+
+            const isBasicInfoIncomplete = (employee) => {
+                const fieldsToCheck = ['employeeId', 'name', 'furigana', 'position', 'enrollmentStatus', 'healthCheckupDate', 'zipCode', 'address', 'birthDate', 'gender', 'hireDate', 'socialInsuranceType', 'insuranceNumber'];
+                return fieldsToCheck.some(field => {
+                    const value = employee[field];
+                    return value === null || value === undefined || value === '';
+                });
+            };
+
+            const isDocumentsIncomplete = (employee) => {
+                const docs = employee.initialDocuments || {};
+                const checkedCount = Object.values(docs.checklist || {}).filter(Boolean).length;
+                return !docs.driveLink || checkedCount < 5;
+            };
+
+            const getStatusClass = (status) => {
+                if (status === '在職') return 'status-active';
+                return 'status-inactive';
+            };
+
+            const logChange = (employeeName, field, oldValue, newValue) => {
+                const timestamp = new Date().toLocaleString('ja-JP', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' });
+                changeHistory.unshift({ timestamp, employeeName, field: fieldLabels[field] || field, oldValue, newValue });
+            };
+
+            const renderTable = () => {
+                const employeesWithComputedNotices = employees.map(employee => {
+                    const basicIncomplete = isBasicInfoIncomplete(employee);
+                    const docsIncomplete = isDocumentsIncomplete(employee);
+
+                    const isDueSoon = (() => {
+                        if (!employee.healthCheckupDate) return false;
+                        const last = new Date(employee.healthCheckupDate);
+                        const today = new Date();
+                        const tenMonths = new Date(last.getFullYear(), last.getMonth() + 10, last.getDate());
+                        return today > tenMonths;
+                    })();
+
+                    let notices = [];
+                    if (employee.notice) notices.push(employee.notice);
+                    if (basicIncomplete) notices.push('基本情報未入力');
+                    if (docsIncomplete) notices.push('初回書類未入力');
+                    if (isDueSoon) notices.push('健康診断時期');
+
+                    return { ...employee, computedNoticeText: notices.join(' / '), notices: notices, basicIncomplete, docsIncomplete };
+                });
+
+                filteredEmployees = employeesWithComputedNotices.filter(employee => {
+                    const nameFilter = currentFilters.name.toLowerCase();
+                    const positionMatch = currentFilters.position ? employee.position === currentFilters.position : true;
+                    const statusMatch = currentFilters.status ? employee.enrollmentStatus === currentFilters.status : true;
+
+                    let noticeMatch = true;
+                    if (currentFilters.notice) {
+                        const noticeText = employee.computedNoticeText;
+                        switch (currentFilters.notice) {
+                            case 'お知らせあり':
+                                noticeMatch = noticeText !== '';
+                                break;
+                            case '基本情報未入力':
+                                noticeMatch = employee.notices.includes('基本情報未入力');
+                                break;
+                            case '初回書類未入力':
+                                noticeMatch = employee.notices.includes('初回書類未入力');
+                                break;
+                            case '健康診断時期':
+                                noticeMatch = employee.notices.includes('健康診断時期');
+                                break;
+                            case 'その他':
+                                // 自動生成されたお知らせ以外
+                                const hasAutoNotice = employee.notices.some(n =>
+                                    n === '基本情報未入力' || n === '初回書類未入力' || n === '健康診断時期'
+                                );
+                                noticeMatch = !hasAutoNotice && noticeText !== '';
+                                break;
+                            default:
+                                noticeMatch = true;
+                        }
+                    }
+
+                    const idMatch = currentFilters.employeeId ? employee.employeeId.includes(currentFilters.employeeId) : true;
+                    const nameMatch = nameFilter ? (employee.name.toLowerCase().includes(nameFilter) || employee.furigana.includes(currentFilters.name)) : true;
+                    const addressMatch = currentFilters.address ? (employee.address || '').startsWith(currentFilters.address) : true;
+                    return positionMatch && statusMatch && noticeMatch && idMatch && nameMatch && addressMatch;
+                });
+
+                // 社員番号で昇順にソート
+                filteredEmployees.sort((a, b) => {
+                    const idA = a.employeeId || '';
+                    const idB = b.employeeId || '';
+                    return idA.localeCompare(idB, undefined, { numeric: true });
+                });
+
+                // 件数表示を更新
+                const totalCount = filteredEmployees.length;
+                const startIndex = (currentPage - 1) * itemsPerPage;
+                const endIndex = Math.min(startIndex + itemsPerPage, totalCount);
+                const paginatedEmployees = filteredEmployees.slice(startIndex, endIndex);
+
+                document.getElementById('listCount').textContent = `表示中: ${paginatedEmployees.length}件 / 総数: ${totalCount}件`;
+
+                // ページネーション情報を更新
+                updatePaginationInfo();
+
+                tableBody.innerHTML = '';
+                paginatedEmployees.forEach(employee => {
+                    const row = document.createElement('tr');
+                    row.dataset.id = employee.employeeId;
+                    const driveLink = employee.initialDocuments?.driveLink;
+                    const docIconHtml = driveLink ? `<a href="${driveLink}" target="_blank" rel="noopener noreferrer"><svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10,4H4C2.89,4 2,4.89 2,6V18A2,2 0 0,0 4,20H20A2,2 0 0,0 22,18V8C22,6.89 21.1,6 20,6H12L10,4Z" /></svg></a>` : `<svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" style="fill: #ccc;"><path d="M10,4H4C2.89,4 2,4.89 2,6V18A2,2 0 0,0 4,20H20A2,2 0 0,0 22,18V8C22,6.89 21.1,6 20,6H12L10,4Z" /></svg>`;
+                    const basicNotificationBadge = employee.basicIncomplete ? `<span class="notification-badge"></span>` : '';
+                    const docsNotificationBadge = employee.docsIncomplete ? `<span class="notification-badge"></span>` : '';
+                    const statusClass = getStatusClass(employee.enrollmentStatus);
+
+                    const noticeBadgesHtml = employee.notices.length > 0
+                        ? `<div class="notice-badges">${employee.notices.map(n => `<span class="badge-danger">${n}</span>`).join('')}</div>`
+                        : '';
+
+                    // 役職がヘルパーの場合のみ担当者情報ボタンを表示
+                    const isHelper = employee.position === 'ヘルパー';
+                    const staffInfoButton = isHelper
+                        ? `<button class="icon-btn" data-action="edit-staff-info"><svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4M11,7V13H13V7H11M11,15V17H13V15H11Z" /></svg></button>`
+                        : '';
+
+                    row.innerHTML = `
+                    <td>${employee.employeeId}</td>
+                    <td>${docIconHtml}</td>
+                    <td><div class="name-cell"><span>${employee.name}</span><div class="furigana">${employee.furigana}</div></div></td>
+                    <td>${employee.position}</td>
+                    <td><span class="status-badge ${statusClass}">${employee.enrollmentStatus}</span></td>
+                    <td>
+                        ${employee.address}
+                        ${employee.address ? `<a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(employee.address)}" target="_blank" rel="noopener noreferrer" style="margin-left: 8px;"><button style="padding: 4px 8px; background-color: var(--primary-color); color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 11px;">地図</button></a>` : ''}
+                    </td>
+                    <td class="notice-cell">${noticeBadgesHtml}</td>
+                    <td><button class="icon-btn" data-action="edit-basic"><svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12,4A4,4 0 0,1 16,8A4,4 0 0,1 12,12A4,4 0 0,1 8,8A4,4 0 0,1 12,4M12,14C16.42,14 20,15.79 20,18V20H4V18C4,15.79 7.58,14 12,14Z" /></svg>${basicNotificationBadge}</button></td>
+                    <td><button class="icon-btn" data-action="edit-docs"><svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" /></svg>${docsNotificationBadge}</button></td>
+                    <td>${staffInfoButton}</td>
+                `;
+                    tableBody.appendChild(row);
+                });
+            };
+
+            const updatePaginationInfo = () => {
+                const totalCount = filteredEmployees.length;
+                const totalPages = Math.ceil(totalCount / itemsPerPage);
+                const startIndex = (currentPage - 1) * itemsPerPage + 1;
+                const endIndex = Math.min(currentPage * itemsPerPage, totalCount);
+
+                const infoText = totalCount > 0 ? `${startIndex}-${endIndex} / ${totalCount}件` : '0件';
+                document.getElementById('pagination-info').textContent = infoText;
+                document.getElementById('pagination-info-top').textContent = infoText;
+
+                // ページ番号ボタンを生成
+                renderPageNumbers('page-numbers', totalPages);
+                renderPageNumbers('page-numbers-top', totalPages);
+
+                // ボタンの有効/無効状態を更新
+                updatePaginationButtons(totalPages);
+            };
+
+            const renderPageNumbers = (containerId, totalPages) => {
+                const container = document.getElementById(containerId);
+                container.innerHTML = '';
+
+                if (totalPages <= 1) return;
+
+                const maxButtons = 5;
+                let startPage = Math.max(1, currentPage - Math.floor(maxButtons / 2));
+                let endPage = Math.min(totalPages, startPage + maxButtons - 1);
+
+                if (endPage - startPage < maxButtons - 1) {
+                    startPage = Math.max(1, endPage - maxButtons + 1);
+                }
+
+                for (let i = startPage; i <= endPage; i++) {
+                    const btn = document.createElement('button');
+                    btn.className = `page-btn ${i === currentPage ? 'active' : ''}`;
+                    btn.textContent = i;
+                    btn.onclick = () => goToPage(i);
+                    container.appendChild(btn);
+                }
+            };
+
+            const updatePaginationButtons = (totalPages) => {
+                const disableFirst = currentPage === 1;
+                const disableLast = currentPage === totalPages || totalPages === 0;
+
+                ['first-page-btn', 'first-page-btn-top'].forEach(id => {
+                    document.getElementById(id).disabled = disableFirst;
+                });
+
+                ['prev-page-btn', 'prev-page-btn-top'].forEach(id => {
+                    document.getElementById(id).disabled = disableFirst;
+                });
+
+                ['next-page-btn', 'next-page-btn-top'].forEach(id => {
+                    document.getElementById(id).disabled = disableLast;
+                });
+
+                ['last-page-btn', 'last-page-btn-top'].forEach(id => {
+                    document.getElementById(id).disabled = disableLast;
+                });
+            };
+
+            const goToPage = (page) => {
+                const totalPages = Math.ceil(filteredEmployees.length / itemsPerPage);
+                currentPage = Math.max(1, Math.min(page, totalPages));
+                renderTable();
+            };
+
+            const populateFilters = () => {
+                const positions = [...new Set(employees.map(e => e.position).filter(Boolean))];
+                const statuses = [...new Set(employees.map(e => e.enrollmentStatus).filter(Boolean))];
+                const getMunicipality = (address) => (address || '').match(/^(.+?[市区町村])/)?.[1] || null;
+                const addresses = [...new Set(employees.map(e => getMunicipality(e.address)).filter(Boolean))];
+
+                filterPositionSelect.innerHTML = '<option value="">すべての役職</option>' + positions.map(p => `<option value="${p}">${p}</option>`).join('');
+                filterStatusSelect.innerHTML = '<option value="">すべての在籍情報</option>' + statuses.map(s => `<option value="${s}">${s}</option>`).join('');
+                filterAddressSelect.innerHTML = '<option value="">すべての住所</option>' + addresses.map(a => `<option value="${a}">${a}</option>`).join('');
+
+                // Populate notice dropdown
+                filterNoticeSelect.innerHTML = '<option value="">すべて</option>';
+                const noticeOptions = ['お知らせあり', '基本情報未入力', '初回書類未入力', '健康診断時期', 'その他'];
+                noticeOptions.forEach(opt => {
+                    const option = document.createElement('option');
+                    option.value = opt;
+                    option.textContent = opt;
+                    filterNoticeSelect.appendChild(option);
+                });
+            };
+
+            const generateChecklist = () => {
+                checklistContainer.innerHTML = checklistItems.map(item => `
+                <div class="checkbox-item">
+                    <input type="checkbox" id="chk-${item}" name="${item}"><label for="chk-${item}">${item}</label>
+                </div>
+            `).join('');
+            };
+
+            const openModal = (modalElement) => modalElement.classList.add('visible');
+            const closeModal = (modalElement) => modalElement.classList.remove('visible');
+
+            topSearchBox.addEventListener('input', (e) => { filterNameInput.value = e.target.value; currentFilters.name = e.target.value; currentPage = 1; renderTable(); });
+            filterIdInput.addEventListener('input', (e) => { currentFilters.employeeId = e.target.value; currentPage = 1; renderTable(); });
+            filterNameInput.addEventListener('input', (e) => { topSearchBox.value = e.target.value; currentFilters.name = e.target.value; currentPage = 1; renderTable(); });
+            filterAddressSelect.addEventListener('change', (e) => { currentFilters.address = e.target.value; currentPage = 1; renderTable(); });
+            filterPositionSelect.addEventListener('change', (e) => { currentFilters.position = e.target.value; currentPage = 1; renderTable(); });
+            filterStatusSelect.addEventListener('change', (e) => { currentFilters.status = e.target.value; currentPage = 1; renderTable(); });
+            filterNoticeSelect.addEventListener('change', (e) => { currentFilters.notice = e.target.value; currentPage = 1; renderTable(); });
+
+            // ページネーションイベントリスナー
+            ['first-page-btn', 'first-page-btn-top'].forEach(id => {
+                document.getElementById(id).addEventListener('click', () => goToPage(1));
+            });
+            ['prev-page-btn', 'prev-page-btn-top'].forEach(id => {
+                document.getElementById(id).addEventListener('click', () => goToPage(currentPage - 1));
+            });
+            ['next-page-btn', 'next-page-btn-top'].forEach(id => {
+                document.getElementById(id).addEventListener('click', () => goToPage(currentPage + 1));
+            });
+            ['last-page-btn', 'last-page-btn-top'].forEach(id => {
+                document.getElementById(id).addEventListener('click', () => {
+                    const totalPages = Math.ceil(filteredEmployees.length / itemsPerPage);
+                    goToPage(totalPages);
+                });
+            });
+
+            // 表示件数変更イベントリスナー
+            ['items-per-page-select', 'items-per-page-select-top'].forEach(id => {
+                document.getElementById(id).addEventListener('change', (e) => {
+                    itemsPerPage = parseInt(e.target.value);
+                    currentPage = 1;
+                    // 両方のselectの値を同期
+                    document.getElementById('items-per-page-select').value = itemsPerPage;
+                    document.getElementById('items-per-page-select-top').value = itemsPerPage;
+                    renderTable();
+                });
+            });
+
+            tableBody.addEventListener('click', (e) => {
+                const employeeId = e.target.closest('tr')?.dataset.id;
+                if (!employeeId) return;
+
+                const employee = employees.find(emp => emp.employeeId === employeeId);
+                if (!employee) return;
+
+                const basicBtn = e.target.closest('[data-action="edit-basic"]');
+                const docsBtn = e.target.closest('[data-action="edit-docs"]');
+                const staffInfoBtn = e.target.closest('[data-action="edit-staff-info"]');
+
+                if (basicBtn) {
+                    employeeForm.reset();
+                    document.getElementById('modal-title').textContent = '基本情報の編集';
+                    document.getElementById('submit-employee-btn').textContent = '更新する';
+
+                    document.getElementById('employee-id-original').value = employee.employeeId;
+                    document.getElementById('employee-id-display').value = employee.employeeId;
+                    document.getElementById('healthCheckupDate').value = employee.healthCheckupDate || '';
+                    document.getElementById('name').value = employee.name || '';
+                    document.getElementById('furigana').value = employee.furigana || '';
+                    document.getElementById('position').value = employee.position || '';
+                    document.getElementById('enrollmentStatus').value = employee.enrollmentStatus || '';
+                    document.getElementById('zipCode').value = employee.zipCode || '';
+                    document.getElementById('address').value = employee.address || '';
+                    document.getElementById('birthDate').value = employee.birthDate || '';
+                    document.getElementById('gender').value = employee.gender || '男';
+                    document.getElementById('hireDate').value = employee.hireDate || '';
+                    document.getElementById('systemicMobilitySupport').checked = employee.systemicMobilitySupport || false;
+                    document.getElementById('socialInsuranceType').value = employee.socialInsuranceType || '雇用保険';
+                    document.getElementById('insuranceNumber').value = employee.insuranceNumber || '';
+                    document.getElementById('notice').value = employee.notice || '';
+                    const qualificationsSelect = document.getElementById('qualifications');
+                    Array.from(qualificationsSelect.options).forEach(opt => opt.selected = (employee.qualifications || []).includes(opt.value));
+                    openModal(employeeModal);
+
+                } else if (docsBtn) {
+                    documentsForm.reset();
+                    document.getElementById('documents-modal-title').textContent = `${employee.name}様 - 初回書類`;
+                    document.getElementById('documents-employee-id').value = employee.employeeId;
+                    const docs = employee.initialDocuments || {};
+                    document.getElementById('drive-link').value = docs.driveLink || '';
+                    document.getElementById('bank-code').value = docs.bankCode || '';
+                    document.getElementById('bank-name').value = docs.bankName || '';
+                    document.getElementById('branch-code').value = docs.branchCode || '';
+                    document.getElementById('branch-name').value = docs.branchName || '';
+                    document.getElementById('account-info').value = docs.accountInfo || '';
+                    document.getElementById('income-category').value = docs.incomeCategory || '103万以下';
+                    checklistItems.forEach(item => {
+                        const chk = document.getElementById(`chk-${item}`);
+                        if (chk) chk.checked = (docs.checklist && docs.checklist[item]) || false;
+                    });
+                    openModal(documentsModal);
+
+                } else if (staffInfoBtn) {
+                    const staffInfoForm = document.getElementById('staff-info-form');
+                    staffInfoForm.reset();
+                    document.getElementById('staff-info-modal-title').textContent = `${employee.name}様 - 担当者情報`;
+                    document.getElementById('staff-info-employee-id').value = employee.employeeId;
+
+                    const staffInfo = employee.staffInfo || {};
+                    const schedule = staffInfo.schedule || {};
+                    document.getElementById('schedule-mon').value = schedule.mon || '';
+                    document.getElementById('schedule-tue').value = schedule.tue || '';
+                    document.getElementById('schedule-wed').value = schedule.wed || '';
+                    document.getElementById('schedule-thu').value = schedule.thu || '';
+                    document.getElementById('schedule-fri').value = schedule.fri || '';
+                    document.getElementById('schedule-sat').value = schedule.sat || '';
+                    document.getElementById('schedule-sun').value = schedule.sun || '';
+
+                    const services = staffInfo.services || [];
+                    document.getElementById('service-physical').checked = services.includes('身体介護');
+                    document.getElementById('service-housework').checked = services.includes('家事援助');
+                    document.getElementById('service-transport').checked = services.includes('移動支援');
+                    document.getElementById('service-accompany').checked = services.includes('同行援護');
+
+                    const transport = staffInfo.transport || [];
+                    document.getElementById('transport-bike').checked = transport.includes('バイク');
+                    document.getElementById('transport-car').checked = transport.includes('車');
+                    document.getElementById('transport-bicycle').checked = transport.includes('自転車');
+
+                    document.getElementById('staff-notes').value = staffInfo.notes || '';
+
+                    openModal(document.getElementById('staff-info-modal'));
+                }
+            });
+
+            employeeForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const originalId = document.getElementById('employee-id-original').value;
+                const newId = document.getElementById('employee-id-display').value;
+                if (originalId !== newId && employees.some(emp => emp.employeeId === newId)) { alert('エラー: その社員番号は既に使用されています。'); return; }
+
+                const formData = {
+                    employeeId: newId, name: document.getElementById('name').value, furigana: document.getElementById('furigana').value,
+                    position: document.getElementById('position').value, enrollmentStatus: document.getElementById('enrollmentStatus').value,
+                    healthCheckupDate: document.getElementById('healthCheckupDate').value, zipCode: document.getElementById('zipCode').value,
+                    address: document.getElementById('address').value, birthDate: document.getElementById('birthDate').value,
+                    gender: document.getElementById('gender').value, hireDate: document.getElementById('hireDate').value,
+                    systemicMobilitySupport: document.getElementById('systemicMobilitySupport').checked,
+                    qualifications: Array.from(document.getElementById('qualifications').selectedOptions).map(opt => opt.value),
+                    socialInsuranceType: document.getElementById('socialInsuranceType').value, insuranceNumber: document.getElementById('insuranceNumber').value,
+                    notice: document.getElementById('notice').value,
+                };
+
+                try {
+                    if (originalId) { // Update
+                        const index = employees.findIndex(emp => emp.employeeId === originalId);
+                        if (index > -1) {
+                            const oldEmployee = { ...employees[index] };
+                            Object.keys(formData).forEach(key => {
+                                const oldValue = key === 'qualifications' ? (oldEmployee[key] || []).sort().join(', ') : String(oldEmployee[key] || '');
+                                const newValue = key === 'qualifications' ? formData[key].sort().join(', ') : String(formData[key]);
+                                if (oldValue !== newValue) {
+                                    logChange(formData.name, key, oldValue, newValue);
+                                }
+                            });
+
+                            // Firestoreに更新を保存
+                            if (window.firebaseDB && window.firestoreUtils && employees[index].firestoreId) {
+                                const { doc, updateDoc } = window.firestoreUtils;
+                                const db = window.firebaseDB;
+
+                                // 画面データをFirestore形式に変換（既存のinitialDocumentsを保持）
+                                const updatedEmployee = { ...employees[index], ...formData };
+                                const firestoreData = convertToFirestoreData(updatedEmployee);
+
+                                await updateDoc(doc(db, 'uses', employees[index].firestoreId), firestoreData);
+                                console.log('Firestoreに更新を保存しました:', firestoreData);
+                            }
+
+                            employees[index] = { ...employees[index], ...formData };
+                        }
+                    } else { // Create New
+                        if (!formData.employeeId) { alert('エラー: 新規登録時は社員番号を入力してください。'); return; }
+
+                        // Firestoreに新規登録
+                        const newEmployee = { ...formData, notice: '', initialDocuments: {} };
+                        if (window.firebaseDB && window.firestoreUtils) {
+                            const { collection, addDoc } = window.firestoreUtils;
+                            const db = window.firebaseDB;
+
+                            // 画面データをFirestore形式に変換
+                            const firestoreData = convertToFirestoreData(newEmployee);
+
+                            const docRef = await addDoc(collection(db, 'uses'), firestoreData);
+                            newEmployee.firestoreId = docRef.id;
+                            console.log('Firestoreに新規登録しました:', docRef.id, firestoreData);
+                        }
+
+                        employees.push(newEmployee);
+                        logChange(formData.name, '社員情報', '', '新規登録');
+                    }
+                    populateFilters(); renderTable(); closeModal(employeeModal);
+                } catch (error) {
+                    console.error('Firestoreへの保存エラー:', error);
+                    alert('データの保存中にエラーが発生しました: ' + error.message);
+                }
+            });
+
+            documentsForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const id = document.getElementById('documents-employee-id').value;
+                const index = employees.findIndex(emp => emp.employeeId === id);
+                if (index > -1) {
+                    const updatedDocs = {
+                        driveLink: document.getElementById('drive-link').value, bankCode: document.getElementById('bank-code').value,
+                        bankName: document.getElementById('bank-name').value, branchCode: document.getElementById('branch-code').value,
+                        branchName: document.getElementById('branch-name').value, accountInfo: document.getElementById('account-info').value,
+                        incomeCategory: document.getElementById('income-category').value, checklist: {}
+                    };
+                    checklistItems.forEach(item => { updatedDocs.checklist[item] = document.getElementById(`chk-${item}`).checked; });
+
+                    try {
+                        // Firestoreに初回書類データを保存
+                        if (window.firebaseDB && window.firestoreUtils && employees[index].firestoreId) {
+                            const { doc, updateDoc } = window.firestoreUtils;
+                            const db = window.firebaseDB;
+
+                            // 画面データをFirestore形式に変換
+                            const updatedEmployee = { ...employees[index], initialDocuments: updatedDocs };
+                            const firestoreData = convertToFirestoreData(updatedEmployee);
+
+                            await updateDoc(doc(db, 'uses', employees[index].firestoreId), firestoreData);
+                            console.log('Firestoreに初回書類データを保存しました:', firestoreData);
+                        }
+
+                        employees[index].initialDocuments = updatedDocs;
+                        renderTable();
+                        closeModal(documentsModal);
+                    } catch (error) {
+                        console.error('初回書類データの保存エラー:', error);
+                        alert('初回書類データの保存中にエラーが発生しました: ' + error.message);
+                    }
+                }
+            });
+
+            const staffInfoForm = document.getElementById('staff-info-form');
+            const staffInfoModal = document.getElementById('staff-info-modal');
+
+            staffInfoForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const id = document.getElementById('staff-info-employee-id').value;
+                const index = employees.findIndex(emp => emp.employeeId === id);
+                if (index > -1) {
+                    const services = [];
+                    if (document.getElementById('service-physical').checked) services.push('身体介護');
+                    if (document.getElementById('service-housework').checked) services.push('家事援助');
+                    if (document.getElementById('service-transport').checked) services.push('移動支援');
+                    if (document.getElementById('service-accompany').checked) services.push('同行援護');
+
+                    const transport = [];
+                    if (document.getElementById('transport-bike').checked) transport.push('バイク');
+                    if (document.getElementById('transport-car').checked) transport.push('車');
+                    if (document.getElementById('transport-bicycle').checked) transport.push('自転車');
+
+                    const updatedStaffInfo = {
+                        schedule: {
+                            mon: document.getElementById('schedule-mon').value,
+                            tue: document.getElementById('schedule-tue').value,
+                            wed: document.getElementById('schedule-wed').value,
+                            thu: document.getElementById('schedule-thu').value,
+                            fri: document.getElementById('schedule-fri').value,
+                            sat: document.getElementById('schedule-sat').value,
+                            sun: document.getElementById('schedule-sun').value
+                        },
+                        services: services,
+                        transport: transport,
+                        notes: document.getElementById('staff-notes').value
+                    };
+
+                    try {
+                        // Firestoreに担当者情報を保存
+                        if (window.firebaseDB && window.firestoreUtils && employees[index].firestoreId) {
+                            const { doc, updateDoc } = window.firestoreUtils;
+                            const db = window.firebaseDB;
+
+                            await updateDoc(doc(db, 'uses', employees[index].firestoreId), {
+                                staffInfo: updatedStaffInfo
+                            });
+                            console.log('Firestoreに担当者情報を保存しました:', updatedStaffInfo);
+                        }
+
+                        employees[index].staffInfo = updatedStaffInfo;
+                        renderTable();
+                        closeModal(staffInfoModal);
+                    } catch (error) {
+                        console.error('担当者情報の保存エラー:', error);
+                        alert('担当者情報の保存中にエラーが発生しました: ' + error.message);
+                    }
+                }
+            });
+
+            const renderHistory = () => {
+                const historyBody = document.getElementById('history-table-body');
+                if (changeHistory.length === 0) {
+                    historyBody.innerHTML = '<tr><td colspan="5" style="text-align: center;">変更履歴はありません。</td></tr>'; return;
+                }
+                historyBody.innerHTML = changeHistory.map(log => `
+                <tr><td>${log.timestamp}</td><td>${log.employeeName}</td><td>${log.field}</td><td>${log.oldValue}</td><td>${log.newValue}</td></tr>`).join('');
+            };
+            document.getElementById('view-history-btn').addEventListener('click', () => { renderHistory(); openModal(historyModal); });
+            document.getElementById('new-employee-btn').addEventListener('click', () => {
+                employeeForm.reset();
+                document.getElementById('modal-title').textContent = '新規社員登録';
+                document.getElementById('submit-employee-btn').textContent = '登録する';
+                document.getElementById('employee-id-original').value = '';
+                openModal(employeeModal);
+            });
+
+            document.getElementById('close-employee-modal-btn').addEventListener('click', () => closeModal(employeeModal));
+            document.getElementById('cancel-employee-btn').addEventListener('click', () => closeModal(employeeModal));
+            employeeModal.addEventListener('click', (e) => { if (e.target === employeeModal) closeModal(employeeModal); });
+            document.getElementById('close-documents-modal-btn').addEventListener('click', () => closeModal(documentsModal));
+            document.getElementById('cancel-documents-btn').addEventListener('click', () => closeModal(documentsModal));
+            documentsModal.addEventListener('click', (e) => { if (e.target === documentsModal) closeModal(documentsModal); });
+            document.getElementById('close-history-modal-btn').addEventListener('click', () => closeModal(historyModal));
+            historyModal.addEventListener('click', (e) => { if (e.target === historyModal) closeModal(historyModal); });
+            document.getElementById('close-staff-info-modal-btn').addEventListener('click', () => closeModal(staffInfoModal));
+            document.getElementById('cancel-staff-info-btn').addEventListener('click', () => closeModal(staffInfoModal));
+            staffInfoModal.addEventListener('click', (e) => { if (e.target === staffInfoModal) closeModal(staffInfoModal); });
+
+            populateFilters();
+            generateChecklist();
+
+            // Firebaseからデータを読み込み、リアルタイムリスナーを設定
+            // Firebase SDKの読み込みを待つ
+            const initFirebase = setInterval(() => {
+                if (window.firebaseDB && window.firestoreUtils) {
+                    clearInterval(initFirebase);
+                    loadEmployeesFromFirestore();
+                    setupRealtimeListener();
+                }
+            }, 100);
+
+            // タイムアウト設定（5秒後にサンプルデータを使用）
+            setTimeout(() => {
+                if (employees.length === 0) {
+                    clearInterval(initFirebase);
+                    console.warn('Firebaseの初期化がタイムアウトしました。サンプルデータを使用します。');
+                    employees = [
+                        { employeeId: '0001', name: '青山 新一', furigana: 'アオヤマ シンイチ', position: '部長', enrollmentStatus: '在職', healthCheckupDate: '2024-11-15', zipCode: '578-0901', address: '東大阪市旭町1-101', birthDate: '1980-04-15', gender: '男', hireDate: '2010-04-01', systemicMobilitySupport: true, qualifications: ['介福', '実務者'], socialInsuranceType: '社保・雇用', insuranceNumber: '12345678', notice: '', initialDocuments: { driveLink: 'https://docs.google.com/folder/d/sample1', bankCode: '1234', bankName: 'みらい銀行', branchCode: '567', branchName: '中央支店', accountInfo: '普通 111222', incomeCategory: '103万以上', checklist: { '免許証コピー': true, '履歴書': true, '労働者名簿': true, '社員証': true, '有期雇用契約書': true } }, staffInfo: { schedule: { mon: '終日OK', tue: '終日OK', wed: '終日OK', thu: '終日OK', fri: '終日OK', sat: '', sun: '' }, services: ['身体介護', '家事援助', '移動支援'], transport: ['車'], notes: '土日は休み希望' } },
+                        { employeeId: '0002', name: '秋田 理智', furigana: 'アキタ リサト', position: '課長', enrollmentStatus: '在職', healthCheckupDate: '', zipCode: '581-0013', address: '八尾市曙川町2-1', birthDate: '1992-08-20', gender: '女', hireDate: '2018-04-01', systemicMobilitySupport: false, qualifications: ['初任者'], socialInsuranceType: '雇用保険', insuranceNumber: '87654321', notice: '研修予定', initialDocuments: { driveLink: '', bankCode: '5678', bankName: 'さくら銀行', branchCode: '123', branchName: '西支店', accountInfo: '普通 333444', incomeCategory: '103万以下', checklist: { '免許証コピー': true, '履歴書': true, '有期雇用契約書': true } }, staffInfo: { schedule: { mon: '8:30~16:00', tue: '8:30~16:00', wed: '', thu: '8:30~16:00', fri: '8:30~16:00', sat: '8:30~12:00', sun: '' }, services: ['家事援助', '同行援護'], transport: ['自転車', 'バイク'], notes: '水曜日は休み' } },
+                        { employeeId: '0003', name: '石川 雄大', furigana: 'イシカワ ユウダイ', position: '課長', enrollmentStatus: '休職', healthCheckupDate: '2025-03-01', zipCode: '578-0901', address: '東大阪市加納7-1-1', birthDate: '1988-11-01', gender: '男', hireDate: '2015-09-01', systemicMobilitySupport: false, qualifications: ['実務者'], socialInsuranceType: '社保・雇用', insuranceNumber: '', notice: '', initialDocuments: { driveLink: 'https://docs.google.com/folder/d/sample3', checklist: {} }, staffInfo: { schedule: { mon: '', tue: '', wed: '', thu: '', fri: '', sat: '', sun: '' }, services: [], transport: [], notes: '現在休職中' } }
+                    ];
+                    renderTable();
+                }
+            }, 5000);
+
+        });
+    </script>
+    <script>
+        // 権限管理ロジック
+        document.addEventListener('DOMContentLoaded', async function () {
+            // 1. ログインチェック
+            const loggedInEmail = localStorage.getItem('loggedInEmail');
+            if (!loggedInEmail) {
+                window.location.href = '../ログイン画面/index.html';
+                return;
+            }
+
+            // 2. 権限取得
+            try {
+                const { doc, getDoc } = window.firestoreUtils;
+                const db = window.firebaseDB;
+                const docRef = doc(db, 'allowedEmails', loggedInEmail);
+                const docSnap = await getDoc(docRef);
+
+                if (!docSnap.exists()) {
+                    alert('権限設定が見つかりません。管理者にお問い合わせください。');
+                    window.location.href = '../ログイン画面/index.html';
+                    return;
+                }
+
+                const data = docSnap.data();
+                const employeeListPermission = data.employeeList || 'hidden'; // デフォルトは非表示
+
+                // 3. 権限チェック (hiddenの場合はリダイレクト)
+                if (employeeListPermission === 'hidden') {
+                    alert('このページへのアクセス権限がありません。');
+                    window.location.href = '../ログイン画面/index.html';
+                    return;
+                }
+
+                // 4. 他アプリへのリンク制御
+                const monthlyShiftPermission = data.monthlyShift || 'hidden';
+                // 社員一覧から月間シフトへのリンクがある場合、ここで制御
+                // 例: <a href="../月間シフト/index.html" id="link-monthlyShift">月間シフト</a>
+                const linkMonthlyShift = document.getElementById('link-monthlyShift');
+                if (linkMonthlyShift && monthlyShiftPermission === 'hidden') {
+                    linkMonthlyShift.style.display = 'none';
+                }
+
+                // 5. 閲覧専用モード (View Mode) の制御
+                if (employeeListPermission === 'view') {
+                    document.title += " (閲覧専用)";
+
+                    // 新規登録ボタンを非表示
+                    const newEmployeeBtn = document.getElementById('new-employee-btn');
+                    if (newEmployeeBtn) newEmployeeBtn.style.display = 'none';
+
+                    // モーダル内の機能制限
+                    const restrictViewMode = () => {
+                        // 基本情報モーダルの保存ボタン
+                        const basicSubmitBtn = document.getElementById('submit-employee-btn');
+                        if (basicSubmitBtn) basicSubmitBtn.style.display = 'none';
+
+                        // 書類モーダルの保存ボタン (今回ID追加が必要)
+                        const documentsSubmitBtn = document.getElementById('documents-submit-btn');
+                        if (documentsSubmitBtn) documentsSubmitBtn.style.display = 'none';
+
+                        // 担当者情報モーダルの保存ボタン (今回ID追加が必要)
+                        const staffInfoSubmitBtn = document.getElementById('staff-info-submit-btn');
+                        if (staffInfoSubmitBtn) staffInfoSubmitBtn.style.display = 'none';
+
+                        // 文書アップロードボタン等は動的生成の場合はCSSで消す
+                        const style = document.createElement('style');
+                        style.innerHTML = `
+                        .icon-btn[data-action="edit-basic"],
+                        .icon-btn[data-action="edit-docs"],
+                        .icon-btn[data-action="edit-staff-info"],
+                         #submit-employee-btn,
+                         #documents-submit-btn,
+                         #staff-info-submit-btn,
+                         #new-employee-btn {
+                             /* 閲覧モードでは保存ボタンのみ隠す */
+                         }
+                         /* 保存ボタンを隠す */
+                         #submit-employee-btn,
+                         #documents-submit-btn,
+                         #staff-info-submit-btn {
+                             display: none !important;
+                         }
+                    `;
+                        document.head.appendChild(style);
+                    };
+                    restrictViewMode();
+                }
+
+            } catch (error) {
+                console.error('権限確認エラー:', error);
+                alert('権限の確認に失敗しました。');
+                window.location.href = '../ログイン画面/index.html';
+            }
+        });
+    </script>
+</body>
+
+</html>

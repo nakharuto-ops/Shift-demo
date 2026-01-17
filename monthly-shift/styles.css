@@ -1,0 +1,1573 @@
+/* カラースキーム: 白 + 薄いオレンジ */
+:root {
+    --primary-white: #ffffff;
+    --bg-white: #fcfcfc;
+    --light-orange: #fff9f0;
+    --soft-orange: #ffedd5;
+    --medium-orange: #fed7aa;
+    --accent-orange: #fb923c;
+    --dark-orange: #ea580c;
+    --border-gray: #efefef;
+    --text-dark: #4a4a4a;
+    --text-gray: #888888;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background-color: var(--bg-white);
+    font-size: 12px;
+    color: var(--text-dark);
+}
+
+.container {
+    padding: 10px 15px;
+}
+
+.header-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.month-header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    text-align: center;
+    color: var(--text-dark);
+}
+
+h1#month-display {
+    font-size: 22px;
+    font-weight: bold;
+    margin: 0;
+    color: var(--dark-orange);
+}
+
+.month-header button {
+    font-size: 22px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--accent-orange);
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+#limitAlertBtn {
+    position: relative;
+    order: -1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 7px 28px 7px 12px;
+    min-width: 92px;
+}
+
+#limitAlertBadge {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    background: #dc3545;
+    color: white;
+    border-radius: 999px;
+    min-width: 22px;
+    height: 22px;
+    padding: 0 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    box-shadow: 0 0 0 2px #fff;
+}
+
+#limitAlertBtn.badge-active {
+    box-shadow: 0 0 0 2px #ffcdd2 inset, 0 0 0 3px rgba(220, 53, 69, 0.3);
+}
+
+.hidden {
+    display: none !important;
+}
+
+.search-container {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background: var(--primary-white);
+    padding: 5px 8px;
+    border-radius: 6px;
+    border: 1px solid var(--border-gray);
+}
+
+#userSearchInput {
+    border: none;
+    outline: none;
+    font-size: 12px;
+    width: 150px;
+}
+
+#searchPrevBtn,
+#searchNextBtn {
+    background: var(--medium-orange);
+    color: var(--text-dark);
+    border: none;
+    padding: 3px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 10px;
+}
+
+#searchPrevBtn:hover,
+#searchNextBtn:hover {
+    background: var(--accent-orange);
+    color: var(--primary-white);
+}
+
+#searchCount {
+    font-size: 11px;
+    color: var(--text-gray);
+    min-width: 40px;
+    text-align: center;
+}
+
+#manageStaffBtn,
+#showHistoryBtn,
+#saveChangesBtn,
+#reflectToServiceBtn {
+    background: var(--accent-orange);
+    color: var(--primary-white);
+    border: none;
+    padding: 7px 12px;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+#manageStaffBtn:hover,
+#showHistoryBtn:hover,
+#saveChangesBtn:hover,
+#reflectToServiceBtn:hover {
+    background: var(--dark-orange);
+}
+
+#saveChangesBtn {
+    background: var(--dark-orange);
+}
+
+.controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+#create-magnet-btn {
+    background: var(--accent-orange);
+    color: var(--primary-white);
+    border: none;
+    padding: 7px 12px;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+#create-magnet-btn:hover {
+    background: var(--dark-orange);
+}
+
+#unassigned-box {
+    border: 1px dashed var(--border-gray);
+    padding: 5px;
+    min-height: 30px;
+    background: var(--primary-white);
+    border-radius: 6px;
+    flex-grow: 1;
+    margin-left: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+#unassigned-box h4 {
+    margin: 0;
+    text-align: center;
+    color: var(--text-gray);
+    font-size: 12px;
+    flex-shrink: 0;
+}
+
+#shift-table-container {
+    width: 100%;
+    overflow: auto;
+    max-height: calc(100vh - 150px);
+}
+
+table {
+    width: 100%;
+    min-width: 1200px;
+    border-collapse: collapse;
+    background: var(--primary-white);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+th,
+td {
+    border: 1px solid var(--border-gray);
+    padding: 4px;
+    text-align: center;
+    vertical-align: top;
+}
+
+th {
+    background: var(--soft-orange);
+    color: var(--text-dark);
+    position: sticky;
+    z-index: 10;
+    min-width: 150px;
+    font-weight: 600;
+}
+
+thead tr:first-child th {
+    top: 0;
+    font-size: 18px;
+    height: 40px;
+    background: var(--medium-orange);
+}
+
+thead tr:nth-child(2) th {
+    top: 40px;
+    background: var(--soft-orange);
+    height: 45px;
+}
+
+/* thead最終行（休暇情報行）の下に太い線を追加 */
+thead tr:last-child th {
+    border-bottom: 3px solid var(--accent-orange);
+}
+
+/* 日付行とテーブル本体の境界を明確にする */
+thead {
+    border-bottom: 5px solid var(--dark-orange);
+    box-shadow: 0 3px 8px rgba(234, 88, 12, 0.4);
+}
+
+tbody tr:first-child td {
+    border-top: none;
+}
+
+.leave-info-cell {
+    text-align: left;
+    font-size: 12px;
+    font-weight: normal;
+    vertical-align: top;
+    padding: 5px;
+}
+
+.leave-info-cell .leave-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 2px;
+}
+
+.leave-info-cell .leave-left {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+}
+
+.leave-info-cell .leave-right {
+    text-align: right;
+}
+
+.leave-input {
+    width: 45px;
+    padding: 0;
+    border: 1px solid var(--border-gray);
+    border-radius: 3px;
+    text-align: center;
+    font-size: 11px;
+    height: 20px;
+    background-color: var(--light-orange);
+    cursor: not-allowed;
+}
+
+th:first-child,
+td:first-child {
+    min-width: 120px;
+    width: 120px;
+    font-weight: bold;
+    position: sticky;
+    left: 0;
+    z-index: 15;
+    /* 強化: 他のセルより前面に表示 */
+    box-sizing: border-box;
+    background-color: var(--light-orange);
+    /* 背景を不透明に */
+}
+
+th:nth-child(2),
+td:nth-child(2) {
+    min-width: 60px;
+    width: 60px;
+    font-weight: bold;
+    position: sticky;
+    left: 120px;
+    z-index: 15;
+    /* 強化: 他のセルより前面に表示 */
+    border-right: 3px solid var(--medium-orange);
+    box-sizing: border-box;
+    background-color: var(--primary-white);
+    /* 背景を不透明に */
+}
+
+td:first-child {
+    background-color: var(--light-orange);
+}
+
+td:nth-child(2) {
+    background: var(--primary-white);
+}
+
+tbody td:nth-child(2) {
+    vertical-align: middle;
+    font-size: 16px;
+}
+
+th:first-child,
+th:nth-child(2) {
+    z-index: 25;
+    /* 強化: ヘッダーのsticky列は最前面 */
+}
+
+/* ヘッダー行のsticky列に背景色を確実に設定 */
+thead tr:first-child th:first-child,
+thead tr:first-child th:nth-child(2) {
+    background-color: var(--medium-orange);
+}
+
+thead tr:nth-child(2) th:first-child,
+thead tr:nth-child(2) th:nth-child(2) {
+    background-color: var(--soft-orange);
+}
+
+.storage-location {
+    background-color: var(--bg-white);
+}
+
+.storage-location .magnet {
+    background-color: var(--light-orange);
+}
+
+.storage-location .magnet .magnet-user {
+    color: var(--text-dark);
+}
+
+/* sticky列（1列目・2列目）はposition: stickyを維持するため除外 */
+#shift-table tbody td:not(:first-child):not(:nth-child(2)) {
+    height: 550px;
+    overflow-y: auto;
+    position: relative;
+    padding-bottom: 25px;
+}
+
+/* sticky列用のスタイル（position: relativeなし） */
+#shift-table tbody td:first-child,
+#shift-table tbody td:nth-child(2) {
+    height: 550px;
+    overflow-y: auto;
+    padding-bottom: 25px;
+    /* position: stickyは親セレクタで設定済み */
+}
+
+
+.time-summary {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: space-around;
+    background-color: var(--bg-white);
+    border-top: 1px solid var(--border-gray);
+    padding: 3px 2px;
+    font-size: 10px;
+    font-weight: bold;
+    height: 20px;
+    align-items: center;
+}
+
+.time-summary span {
+    text-align: center;
+    flex: 1;
+}
+
+/* 土曜日・日曜日の色分け */
+tr[data-day="6"] td:nth-child(2) {
+    color: #1565c0;
+    /* 土曜日: 青色 */
+}
+
+tr[data-day="0"] td:nth-child(2) {
+    color: #c62828;
+    /* 日曜日: 赤色 */
+}
+
+tfoot td {
+    font-weight: bold;
+    background: var(--light-orange);
+}
+
+.magnet {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center;
+    justify-content: flex-start;
+    width: 220px !important;
+    max-width: 220px !important;
+    padding: 4px 6px;
+    border-radius: 4px;
+    border: 1px solid var(--border-gray);
+    background-color: var(--primary-white);
+    box-sizing: border-box !important;
+    gap: 4px;
+    /* 一列表示用の間隔 */
+    overflow: hidden;
+    font-size: 11px;
+    line-height: 1.3;
+    margin: 2px;
+    cursor: grab;
+    vertical-align: top;
+}
+
+.magnet.dragging {
+    opacity: 0.5;
+    cursor: grabbing;
+}
+
+.magnet:active {
+    cursor: grabbing;
+}
+
+.drop-zone.drag-over {
+    background-color: var(--light-orange);
+}
+
+.magnet-name,
+.magnet-user {
+    width: 70px !important;
+    min-width: 70px !important;
+    flex-shrink: 0;
+    font-weight: bold;
+    font-size: 13px;
+    text-align: left;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    /* margin-right削除: gapで間隔を制御 */
+}
+
+.magnet-service {
+    width: 40px !important;
+    min-width: 40px !important;
+    flex-shrink: 0;
+    font-size: 12px;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    background-color: rgba(0, 0, 0, 0.05);
+    border-radius: 3px;
+    /* margin-right削除: gapで間隔を制御 */
+}
+
+.magnet-star {
+    color: #f4b400;
+    font-size: 13px;
+    margin: 0 4px;
+    flex-shrink: 0;
+}
+
+.magnet-time {
+    flex-grow: 1;
+    text-align: right;
+    font-size: 12px;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.magnet.highlight {
+    background-color: var(--soft-orange);
+    border-color: var(--accent-orange);
+    box-shadow: 0 0 5px 1px var(--accent-orange);
+    transition: background-color 0.3s ease;
+}
+
+.magnet.search-highlight {
+    background-color: var(--medium-orange) !important;
+    border: 2px solid var(--accent-orange) !important;
+    box-shadow: 0 0 10px 2px var(--accent-orange) !important;
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+#limit-alert-modal .modal-content {
+    max-width: 800px;
+    width: 90%;
+    max-height: 85vh;
+    overflow: auto;
+}
+
+#limit-alert-modal .modal-body {
+    max-height: 65vh;
+    overflow: auto;
+}
+
+#limit-alert-modal table th,
+#limit-alert-modal table td {
+    padding: 4px 8px;
+    font-size: 12px;
+    line-height: 1.3;
+    white-space: nowrap;
+    /* グローバルなstickyスタイルをリセット（列ずれ防止） */
+    position: static;
+    left: auto;
+    min-width: auto;
+    width: auto;
+    z-index: auto;
+}
+
+/* テーブル全体をコンテンツにフィット */
+#limit-alert-modal table {
+    width: auto !important;
+    min-width: auto !important;
+    table-layout: auto;
+}
+
+/* 支給量・使用量・超過量列: 右寄せ */
+#limit-alert-modal table th:nth-child(3),
+#limit-alert-modal table th:nth-child(4),
+#limit-alert-modal table th:nth-child(5),
+#limit-alert-modal table td:nth-child(3),
+#limit-alert-modal table td:nth-child(4),
+#limit-alert-modal table td:nth-child(5) {
+    text-align: right;
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        box-shadow: 0 0 10px 2px var(--accent-orange);
+    }
+
+    50% {
+        box-shadow: 0 0 15px 4px var(--accent-orange);
+    }
+}
+
+.magnet.cut {
+    cursor: move;
+    opacity: 0.8;
+    border: 2px dashed #0066ff;
+    /* 青い点線で視覚的に分かりやすく */
+    box-shadow: 0 0 5px rgba(0, 102, 255, 0.3);
+}
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+}
+
+.modal-overlay.visible {
+    display: flex;
+}
+
+.modal-content {
+    background: var(--primary-white);
+    width: 90%;
+    max-width: 500px;
+    padding: 15px;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border-gray);
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+}
+
+.modal-header h2 {
+    font-size: 18px;
+    margin: 0;
+    color: var(--dark-orange);
+}
+
+.modal-close-btn {
+    font-size: 24px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    color: var(--text-gray);
+}
+
+.modal-close-btn:hover {
+    color: var(--accent-orange);
+}
+
+.modal-form-group {
+    margin-bottom: 10px;
+}
+
+.modal-form-group label {
+    display: block;
+    font-size: 12px;
+    color: var(--text-gray);
+    margin-bottom: 4px;
+}
+
+.modal-form-group input,
+.modal-form-group textarea,
+.modal-form-group select {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 8px;
+    border-radius: 6px;
+    border: 1px solid var(--border-gray);
+    font-size: 14px;
+    background-color: var(--primary-white);
+}
+
+.modal-form-group input:focus,
+.modal-form-group textarea:focus,
+.modal-form-group select:focus {
+    outline: none;
+    border-color: var(--accent-orange);
+}
+
+.modal-form-group .time-inputs {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.modal-form-group .time-inputs input {
+    text-align: center;
+}
+
+.modal-form-group textarea {
+    min-height: 70px;
+    resize: vertical;
+}
+
+.modal-form-group input:read-only,
+.modal-form-group textarea:read-only {
+    background-color: var(--light-orange);
+    color: var(--text-dark);
+    border-color: var(--border-gray);
+}
+
+.modal-footer {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.modal-footer button,
+.modal-footer-btn {
+    background-color: var(--accent-orange);
+    color: var(--primary-white);
+    border: 1px solid var(--accent-orange);
+    border-radius: 6px;
+    padding: 8px 12px;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.modal-footer button:hover,
+.modal-footer-btn:hover {
+    background-color: var(--dark-orange);
+}
+
+#staff-list-editor {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    max-height: 300px;
+    overflow-y: auto;
+    border: 1px solid var(--border-gray);
+    border-radius: 6px;
+    background-color: var(--primary-white);
+}
+
+#staff-list-editor li {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid var(--border-gray);
+    cursor: grab;
+    background-color: var(--primary-white);
+    gap: 10px;
+}
+
+#staff-list-editor li:last-child {
+    border-bottom: none;
+}
+
+#staff-list-editor li.dragging {
+    opacity: 0.5;
+    background: var(--light-orange);
+}
+
+.staff-name {
+    flex-grow: 1;
+}
+
+.staff-type,
+.staff-gender {
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    background: var(--soft-orange);
+    color: var(--text-dark);
+}
+
+.add-staff-container {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+}
+
+.add-staff-container select {
+    flex: 1;
+    min-width: 100px;
+}
+
+.delete-staff-btn {
+    background: var(--dark-orange);
+    color: var(--primary-white);
+    border: none;
+    border-radius: 4px;
+    padding: 4px 8px;
+    cursor: pointer;
+    font-size: 10px;
+}
+
+.delete-staff-btn:hover {
+    background: #e65100;
+}
+
+.add-staff-container {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+#new-staff-name-input {
+    flex-grow: 1;
+}
+
+#add-new-staff-btn {
+    background-color: var(--dark-orange);
+    color: var(--primary-white);
+}
+
+#history-list {
+    list-style: none;
+    padding: 10px;
+    margin: 0;
+    max-height: 400px;
+    overflow-y: auto;
+    background: var(--primary-white);
+    border: 1px solid var(--border-gray);
+    border-radius: 6px;
+    font-size: 12px;
+}
+
+#history-list li {
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border-gray);
+}
+
+#history-list li:last-child {
+    border-bottom: none;
+}
+
+.history-meta {
+    color: var(--text-gray);
+    font-size: 11px;
+    display: block;
+}
+
+/* コンテキストメニュー */
+.context-menu {
+    position: fixed;
+    background: var(--primary-white);
+    border: 1px solid var(--border-gray);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 10000;
+    min-width: 120px;
+    display: none;
+}
+
+.context-menu.visible {
+    display: block;
+}
+
+.context-menu-item {
+    padding: 10px 16px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.2s;
+}
+
+.context-menu-item:hover {
+    background: var(--light-orange);
+}
+
+.context-menu-item:first-child {
+    border-radius: 8px 8px 0 0;
+}
+
+.context-menu-item:last-child {
+    border-radius: 0 0 8px 8px;
+}
+
+.context-menu-item.delete {
+    color: var(--dark-orange);
+    font-weight: 600;
+}
+
+.context-menu-item.delete:hover {
+    background: var(--soft-orange);
+}
+
+/* マグネットの色分け */
+.magnet.color-yellow {
+    background-color: #fff59d !important;
+    /* 黄色 - 同行 */
+}
+
+.magnet.color-red {
+    background-color: var(--primary-white) !important;
+    /* 背景は通常色 */
+    color: #c62828 !important;
+    /* 文字を赤にして目立たせる */
+}
+
+.magnet.color-orange {
+    background-color: #ffcc80 !important;
+    /* オレンジ色 - 時間変更 */
+}
+
+.magnet.color-blue {
+    background-color: #90caf9 !important;
+    /* 青色 - 利用者名未入力 */
+}
+
+/* セルの背景色（公休・有給） */
+td.cell-koukyu {
+    background-color: var(--light-orange) !important;
+    position: relative;
+}
+
+td.cell-yuukyu {
+    background-color: var(--soft-orange) !important;
+    position: relative;
+}
+
+td.cell-koukyu::before {
+    content: '公休';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-weight: bold;
+    font-size: 14px;
+    color: var(--dark-orange);
+    pointer-events: none;
+    z-index: 0;
+}
+
+td.cell-yuukyu::before {
+    content: '有給';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-weight: bold;
+    font-size: 14px;
+    color: var(--dark-orange);
+    pointer-events: none;
+    z-index: 0;
+}
+
+td.drop-zone>.magnet {
+    position: relative;
+    z-index: 1;
+}
+
+/* Undo/Redoボタン */
+#undoBtn,
+#redoBtn {
+    background: var(--primary-white);
+    color: var(--text-dark);
+    border: 1px solid var(--border-gray);
+    padding: 7px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+#undoBtn:hover,
+#redoBtn:hover {
+    background: var(--light-orange);
+    border-color: var(--accent-orange);
+}
+
+#undoBtn:disabled,
+#redoBtn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Flatpickr のスクロール伝播を防止 */
+.flatpickr-calendar,
+.flatpickr-time {
+    overscroll-behavior: contain;
+}
+
+/* ==========================================================================
+   レスポンシブデザイン（ノートPC・モニター対応）
+   ========================================================================== */
+
+/* 大型モニター用（1920px以上）- デフォルトスタイルをそのまま使用 */
+
+/* 標準ノートPC・小型モニター用（1281px〜1920px） */
+@media (max-width: 1920px) {
+    table {
+        min-width: 1100px;
+    }
+
+    .magnet {
+        width: 200px !important;
+        max-width: 200px !important;
+    }
+
+    .magnet-name,
+    .magnet-user {
+        width: 65px !important;
+        min-width: 65px !important;
+        font-size: 12px;
+    }
+
+    .magnet-service {
+        width: 38px !important;
+        min-width: 38px !important;
+        font-size: 11px;
+    }
+
+    th:first-child,
+    td:first-child {
+        min-width: 110px;
+        width: 110px;
+    }
+
+    th:nth-child(2),
+    td:nth-child(2) {
+        min-width: 55px;
+        width: 55px;
+        left: 110px;
+    }
+
+    th {
+        min-width: 140px;
+    }
+}
+
+/* 小型ノートPC用（1280px〜1600px） */
+@media (max-width: 1600px) {
+    body {
+        font-size: 11px;
+    }
+
+    .container {
+        padding: 8px 12px;
+    }
+
+    table {
+        min-width: 1000px;
+    }
+
+    .magnet {
+        width: 180px !important;
+        max-width: 180px !important;
+        padding: 3px 5px;
+        gap: 3px;
+        font-size: 10px;
+    }
+
+    .magnet-name,
+    .magnet-user {
+        width: 60px !important;
+        min-width: 60px !important;
+        font-size: 11px;
+    }
+
+    .magnet-service {
+        width: 35px !important;
+        min-width: 35px !important;
+        font-size: 10px;
+    }
+
+    .magnet-time {
+        font-size: 11px;
+    }
+
+    th:first-child,
+    td:first-child {
+        min-width: 100px;
+        width: 100px;
+        font-size: 11px;
+    }
+
+    th:nth-child(2),
+    td:nth-child(2) {
+        min-width: 50px;
+        width: 50px;
+        left: 100px;
+        font-size: 14px;
+    }
+
+    th {
+        min-width: 130px;
+        font-size: 11px;
+    }
+
+    thead tr:first-child th {
+        font-size: 16px;
+        height: 36px;
+    }
+
+    thead tr:nth-child(2) th {
+        top: 36px;
+        height: 40px;
+    }
+
+    #shift-table tbody td:not(:first-child):not(:nth-child(2)) {
+        height: 500px;
+        padding-bottom: 22px;
+    }
+
+    #shift-table tbody td:first-child,
+    #shift-table tbody td:nth-child(2) {
+        height: 500px;
+        padding-bottom: 22px;
+    }
+
+    h1#month-display {
+        font-size: 20px;
+    }
+
+    .header-actions button {
+        padding: 6px 10px;
+        font-size: 11px;
+    }
+
+    #create-magnet-btn {
+        padding: 6px 10px;
+        font-size: 11px;
+    }
+
+    .time-summary {
+        font-size: 9px;
+        height: 18px;
+    }
+
+    .leave-info-cell {
+        font-size: 11px;
+        padding: 4px;
+    }
+
+    /* モーダル・コンテキストメニューの調整 */
+    .modal-content {
+        max-width: 480px;
+        padding: 13px;
+    }
+
+    .modal-header h2 {
+        font-size: 17px;
+    }
+
+    .modal-form-group label {
+        font-size: 11px;
+    }
+
+    .modal-form-group input,
+    .modal-form-group textarea,
+    .modal-form-group select {
+        padding: 7px;
+        font-size: 13px;
+    }
+
+    .modal-footer button,
+    .modal-footer-btn {
+        padding: 7px 11px;
+        font-size: 11px;
+    }
+
+    #staff-list-editor {
+        max-height: 280px;
+    }
+
+    #staff-list-editor li {
+        padding: 9px;
+        font-size: 11px;
+    }
+
+    #history-list {
+        max-height: 380px;
+        font-size: 11px;
+    }
+
+    #limit-alert-modal .modal-content {
+        max-width: 750px;
+    }
+
+    #limit-alert-modal .modal-body {
+        max-height: 62vh;
+    }
+
+    #limit-alert-modal table th,
+    #limit-alert-modal table td {
+        padding: 3px 7px;
+        font-size: 11px;
+    }
+}
+
+/* 超小型ノートPC用（1280px以下） */
+@media (max-width: 1280px) {
+    body {
+        font-size: 10px;
+    }
+
+    .container {
+        padding: 6px 10px;
+    }
+
+    table {
+        min-width: 900px;
+    }
+
+    .magnet {
+        width: 160px !important;
+        max-width: 160px !important;
+        padding: 2px 4px;
+        gap: 2px;
+        font-size: 9px;
+        margin: 1px;
+    }
+
+    .magnet-name,
+    .magnet-user {
+        width: 55px !important;
+        min-width: 55px !important;
+        font-size: 10px;
+    }
+
+    .magnet-service {
+        width: 32px !important;
+        min-width: 32px !important;
+        font-size: 9px;
+    }
+
+    .magnet-time {
+        font-size: 10px;
+    }
+
+    th:first-child,
+    td:first-child {
+        min-width: 90px;
+        width: 90px;
+        font-size: 10px;
+    }
+
+    th:nth-child(2),
+    td:nth-child(2) {
+        min-width: 45px;
+        width: 45px;
+        left: 90px;
+        font-size: 13px;
+    }
+
+    th {
+        min-width: 120px;
+        font-size: 10px;
+        padding: 3px;
+    }
+
+    thead tr:first-child th {
+        font-size: 14px;
+        height: 32px;
+    }
+
+    thead tr:nth-child(2) th {
+        top: 32px;
+        height: 36px;
+    }
+
+    #shift-table tbody td:not(:first-child):not(:nth-child(2)) {
+        height: 450px;
+        padding-bottom: 20px;
+    }
+
+    #shift-table tbody td:first-child,
+    #shift-table tbody td:nth-child(2) {
+        height: 450px;
+        padding-bottom: 20px;
+    }
+
+    h1#month-display {
+        font-size: 18px;
+    }
+
+    .month-header button {
+        font-size: 18px;
+    }
+
+    .header-controls {
+        gap: 8px;
+    }
+
+    .header-actions {
+        gap: 8px;
+    }
+
+    .header-actions button {
+        padding: 5px 8px;
+        font-size: 10px;
+    }
+
+    #create-magnet-btn {
+        padding: 5px 8px;
+        font-size: 10px;
+    }
+
+    #unassigned-box {
+        padding: 4px;
+        min-height: 26px;
+        margin-left: 10px;
+        gap: 8px;
+    }
+
+    #unassigned-box h4 {
+        font-size: 10px;
+    }
+
+    .time-summary {
+        font-size: 8px;
+        height: 16px;
+        padding: 2px 1px;
+    }
+
+    .leave-info-cell {
+        font-size: 10px;
+        padding: 3px;
+    }
+
+    .leave-input {
+        width: 40px;
+        height: 18px;
+        font-size: 10px;
+    }
+
+    #limitAlertBtn {
+        padding: 5px 24px 5px 10px;
+        min-width: 80px;
+        gap: 4px;
+    }
+
+    #limitAlertBadge {
+        min-width: 20px;
+        height: 20px;
+        font-size: 11px;
+    }
+
+    .search-container {
+        padding: 4px 6px;
+    }
+
+    #userSearchInput {
+        font-size: 11px;
+        width: 130px;
+    }
+
+    #searchPrevBtn,
+    #searchNextBtn {
+        padding: 2px 6px;
+        font-size: 9px;
+    }
+
+    #searchCount {
+        font-size: 10px;
+        min-width: 35px;
+    }
+
+    /* モーダル・コンテキストメニューの調整 */
+    .modal-content {
+        max-width: 450px;
+        padding: 12px;
+    }
+
+    .modal-header h2 {
+        font-size: 16px;
+    }
+
+    .modal-form-group label {
+        font-size: 11px;
+    }
+
+    .modal-form-group input,
+    .modal-form-group textarea,
+    .modal-form-group select {
+        padding: 6px;
+        font-size: 12px;
+    }
+
+    .modal-footer button,
+    .modal-footer-btn {
+        padding: 6px 10px;
+        font-size: 11px;
+    }
+
+    .context-menu {
+        min-width: 100px;
+    }
+
+    .context-menu-item {
+        padding: 8px 12px;
+        font-size: 12px;
+    }
+
+    #staff-list-editor {
+        max-height: 250px;
+    }
+
+    #staff-list-editor li {
+        padding: 8px;
+        gap: 8px;
+        font-size: 11px;
+    }
+
+    .staff-type,
+    .staff-gender {
+        font-size: 10px;
+        padding: 2px 6px;
+    }
+
+    .delete-staff-btn {
+        padding: 3px 6px;
+        font-size: 9px;
+    }
+
+    #history-list {
+        max-height: 350px;
+        font-size: 11px;
+    }
+
+    #history-list li {
+        padding: 6px 0;
+    }
+
+    .history-meta {
+        font-size: 10px;
+    }
+
+    #limit-alert-modal .modal-content {
+        max-width: 700px;
+    }
+
+    #limit-alert-modal .modal-body {
+        max-height: 60vh;
+    }
+
+    #limit-alert-modal table th,
+    #limit-alert-modal table td {
+        padding: 3px 6px;
+        font-size: 11px;
+    }
+}
+
+/* ============================================
+   サービスタイプ別の色分け
+   ============================================ */
+.service-type-身体,
+.magnet.service-type-身体,
+.magnet.service-type-身 {
+    background-color: #cce5ff !important;
+    border-left: 4px solid #007bff !important;
+}
+
+.service-type-家事,
+.magnet.service-type-家事,
+.magnet.service-type-家 {
+    background-color: #d4edda !important;
+    border-left: 4px solid #28a745 !important;
+}
+
+.service-type-移動,
+.magnet.service-type-移動,
+.magnet.service-type-移 {
+    background-color: #fff3cd !important;
+    border-left: 4px solid #ffc107 !important;
+}
+
+.service-type-居介,
+.magnet.service-type-居介,
+.magnet.service-type-居 {
+    background-color: #e2d4f0 !important;
+    border-left: 4px solid #6f42c1 !important;
+}
+
+.service-type-その他,
+.magnet.service-type-その他 {
+    background-color: #f8d7da !important;
+    border-left: 4px solid #dc3545 !important;
+}
+
+/* ============================================
+   マグネットの状態別色
+   ============================================ */
+.magnet.color-yellow {
+    background-color: #fff59d !important;
+    /* 黄色 - 同行 */
+}
+
+.magnet.color-red {
+    background-color: #ef9a9a !important;
+    /* 赤色 - キャンセル */
+}
+
+.magnet.color-orange {
+    background-color: #ffcc80 !important;
+    /* オレンジ色 - 時間変更 */
+}
+
+.magnet.color-blue {
+    background-color: #90caf9 !important;
+    /* 青色 - 利用者名未入力 */
+}
+
+/* 会社負担マグネット */
+.magnet.company-burden {
+    background-color: #9370db !important;
+    color: white !important;
+    border-left: 4px solid #6a4ca5 !important;
+}
+
+.magnet.company-burden .magnet-user {
+    color: white !important;
+}
+
+/* キャンセルマグネット */
+.magnet.magnet-cancelled {
+    background-color: #ffe0e0 !important;
+    border-color: #ea580c !important;
+    color: #ea580c !important;
+    text-decoration: line-through;
+}
+
+/* 同行マグネット */
+.magnet.magnet-doukou {
+    background-color: #fff9f0 !important;
+    border-left: 4px solid #fed7aa !important;
+}
+
+/* 時間変更マグネット */
+.magnet.magnet-time-modified {
+    background-color: #ffedd5 !important;
+    border-left: 4px solid #fb923c !important;
+}
+
+/* ============================================
+   セル休暇背景色
+   ============================================ */
+td.cell-koukyu {
+    background-color: #c8e6c9 !important;
+    position: relative;
+}
+
+td.cell-yuukyu {
+    background-color: #ffe0b2 !important;
+    position: relative;
+}
+
+td.cell-tokkyu {
+    background-color: #e3f2fd !important;
+    position: relative;
+}
+
+td.cell-koukyu::before {
+    content: '公休';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-weight: bold;
+    font-size: 14px;
+    color: #2e7d32;
+    pointer-events: none;
+    z-index: 0;
+}
+
+td.cell-yuukyu::before {
+    content: '有休';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-weight: bold;
+    font-size: 14px;
+    color: #e65100;
+    pointer-events: none;
+    z-index: 0;
+}
+
+td.cell-tokkyu::before {
+    content: '特休';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-weight: bold;
+    font-size: 14px;
+    color: #1565c0;
+    pointer-events: none;
+    z-index: 0;
+}
