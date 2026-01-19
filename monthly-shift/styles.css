@@ -144,7 +144,11 @@ h1#month-display {
 #manageStaffBtn,
 #showHistoryBtn,
 #saveChangesBtn,
-#reflectToServiceBtn {
+#reflectToServiceBtn,
+#exportCSVBtn,
+#checklistBtn,
+#limitAlertBtn,
+#changeNotificationBtn {
     background: var(--accent-orange);
     color: var(--primary-white);
     border: none;
@@ -158,7 +162,11 @@ h1#month-display {
 #manageStaffBtn:hover,
 #showHistoryBtn:hover,
 #saveChangesBtn:hover,
-#reflectToServiceBtn:hover {
+#reflectToServiceBtn:hover,
+#exportCSVBtn:hover,
+#checklistBtn:hover,
+#limitAlertBtn:hover,
+#changeNotificationBtn:hover {
     background: var(--dark-orange);
 }
 
@@ -235,9 +243,17 @@ th {
     background: var(--soft-orange);
     color: var(--text-dark);
     position: sticky;
-    z-index: 10;
-    min-width: 150px;
+    z-index: 100;
+    /* Increased z-index */
+    min-width: 220px;
+    /* Unify width with magnet */
     font-weight: 600;
+}
+
+/* Ensure shift columns have proper width for 100% magnets */
+th:not(:first-child):not(:nth-child(2)) {
+    min-width: 220px !important;
+    width: 220px !important;
 }
 
 thead tr:first-child th {
@@ -356,12 +372,16 @@ th:nth-child(2) {
 /* ヘッダー行のsticky列に背景色を確実に設定 */
 thead tr:first-child th:first-child,
 thead tr:first-child th:nth-child(2) {
-    background-color: var(--medium-orange);
+    background-color: var(--medium-orange) !important;
+    color: var(--text-dark) !important;
 }
 
 thead tr:nth-child(2) th:first-child,
 thead tr:nth-child(2) th:nth-child(2) {
-    background-color: var(--soft-orange);
+    background-color: var(--soft-orange) !important;
+    color: var(--text-dark) !important;
+    position: static !important;
+    z-index: auto !important;
 }
 
 .storage-location {
@@ -436,8 +456,9 @@ tfoot td {
     flex-direction: row !important;
     align-items: center;
     justify-content: flex-start;
-    width: 220px !important;
-    max-width: 220px !important;
+    width: 100% !important;
+    /* Unified width */
+    max-width: 100% !important;
     padding: 4px 6px;
     border-radius: 4px;
     border: 1px solid var(--border-gray);
@@ -976,8 +997,9 @@ td.drop-zone>.magnet {
     }
 
     .magnet {
-        width: 200px !important;
-        max-width: 200px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 2px 0 !important;
     }
 
     .magnet-name,
@@ -1026,11 +1048,12 @@ td.drop-zone>.magnet {
     }
 
     .magnet {
-        width: 180px !important;
-        max-width: 180px !important;
+        width: 100% !important;
+        max-width: 100% !important;
         padding: 3px 5px;
         gap: 3px;
         font-size: 10px;
+        margin: 2px 0 !important;
     }
 
     .magnet-name,
@@ -1186,12 +1209,12 @@ td.drop-zone>.magnet {
     }
 
     .magnet {
-        width: 160px !important;
-        max-width: 160px !important;
+        width: 100% !important;
+        max-width: 100% !important;
         padding: 2px 4px;
         gap: 2px;
         font-size: 9px;
-        margin: 1px;
+        margin: 1px 0 !important;
     }
 
     .magnet-name,

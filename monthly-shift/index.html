@@ -186,26 +186,51 @@
         }
 
         tfoot td { font-weight: bold; background: #f8f9fa; }
+        /* Ensure shift columns have enough width */
+        th:not(:first-child):not(:nth-child(2)), 
+        td:not(:first-child):not(:nth-child(2)) {
+            min-width: 220px !important;
+            width: 220px !important; /* Fixed width for consistency */
+        }
+
+        /* Fix Orange Header Issue - Strong Override against styles.css */
+        thead tr:first-child th:first-child,
+        thead tr:first-child th:nth-child(2),
+        thead tr:nth-child(2) th:first-child,
+        thead tr:nth-child(2) th:nth-child(2) {
+            background-color: #343a40 !important; /* Dark Grey */
+            color: white !important;
+            border-bottom: 1px solid #555;
+        }
+
+        /* Magnet Styling - Force 100% width overriding media queries */
         .magnet {
             font-size: 11px;
             line-height: 1.3;
             padding: 3px 5px;
             border-radius: 3px;
-            margin: 2px;
+            margin: 2px 0 !important;
             border: 1px solid rgba(0,0,0,0.2);
             cursor: grab;
+            user-select: none; /* Prevent text selection */
+            -webkit-user-select: none;
             background-color: #ffffff;
             display: grid !important;
             grid-template-columns: 1fr auto;
             gap: 8px;
             align-items: center;
-            width: 220px !important;
-            min-width: 220px !important;
-            max-width: 220px !important;
+            width: 100% !important;
+            min-width: 0 !important;
+            max-width: 100% !important;
             vertical-align: top;
             box-sizing: border-box !important;
             position: relative;
         }
+
+        /* Media Query Overrides to ensure 100% width allows persists */
+        @media (max-width: 1920px) { .magnet { width: 100% !important; max-width: 100% !important; } }
+        @media (max-width: 1600px) { .magnet { width: 100% !important; max-width: 100% !important; } }
+        @media (max-width: 1280px) { .magnet { width: 100% !important; max-width: 100% !important; } }
         .magnet.dragging { opacity: 0.5; }
         .drop-zone.drag-over { background-color: #e9ecef; }
 
@@ -805,15 +830,15 @@
                 <span id="autoSaveIndicator"
                     style="background: #28a745; color: white; padding: 7px 12px; border-radius: 6px; font-weight: bold; font-size: 12px;">✓
                     自動保存中</span>
-                <button id="exportCSVBtn" style="background: #ffc107; color: #000;">エクスポート</button>
-                <button id="checklistBtn" style="background: #17a2b8; color: white;">チェックリスト</button>
-                <button id="limitAlertBtn" style="background: #e91e63; color: white; position: relative;">
+                <button id="exportCSVBtn">エクスポート</button>
+                <button id="checklistBtn">チェックリスト</button>
+                <button id="limitAlertBtn" style="position: relative;">
                     支給量
                     <span id="limitAlertBadge" class="badge hidden">0</span>
                 </button>
                 <button id="showHistoryBtn">履歴表示</button>
                 <button id="manageStaffBtn">担当者管理</button>
-                <button id="changeNotificationBtn" style="background: #ff6b6b; color: white;">変更連絡</button>
+                <button id="changeNotificationBtn">変更連絡</button>
             </div>
         </div>
 
@@ -2367,8 +2392,11 @@
                     const type = staff.type || '';
                     const requiredHours = getRequiredHours(type);
 
+                    // Add a specific class to these cells to control sticky behavior via CSS
                     const leaveCell = document.createElement('th');
                     leaveCell.classList.add('leave-info-cell');
+                    // Ensure these are NOT sticky
+                    leaveCell.style.position = 'static';
 
                     // 拘束時間の表示を職種に応じて変更
                     const requiredHoursDisplay = requiredHours !== null ? requiredHours : '';
@@ -3742,17 +3770,26 @@
             // イベント委譲: 全てのドラッグ&ドロップイベントを document で一元管理（パフォーマンス改善）
             let dragEventsInitialized = false;
             let currentDragOverZone = null; // drag-over 状態管理用
+            // 注: draggedMagnet は 1683行、moveOriginInfo は 1552行、isDragging/autoScrollInterval は 3497-3500行で宣言済み
+
 
             function setupDragAndDrop() {
                 // イベント委譲は一度だけ設定（重複登録を防ぐ）
                 if (!dragEventsInitialized) {
                     // dragstart: document で監視
                     document.addEventListener('dragstart', e => {
-                        if (e.target.classList.contains('magnet')) {
+                        const magnet = e.target.closest('.magnet');
+                        if (magnet) {
                             isDragging = true; // ドラッグ開始
                             cancelCut();
-                            draggedMagnet = e.target;
+                            draggedMagnet = magnet; // e.targetではなくclosestで取得した要素を使用
                             draggedMagnet.classList.add('dragging'); // ドラッグ中のスタイルを適用
+
+                            // データ転送オブジェクト設定 (Firefox等一部ブラウザで必要)
+                            if (e.dataTransfer) {
+                                e.dataTransfer.effectAllowed = 'move';
+                                e.dataTransfer.setData('text/plain', magnet.id);
+                            }
 
                             const originCell = draggedMagnet.parentElement;
                             const dateCell = originCell.closest('tr')?.querySelector('td:nth-child(2)');
@@ -3763,6 +3800,23 @@
 
                             // ドラッグ開始時に状態を保存
                             saveStateToUndo();
+                        }
+                    });
+
+                    // dragend: ドラッグ終了時のクリーンアップ
+                    document.addEventListener('dragend', e => {
+                        isDragging = false;
+                        if (draggedMagnet) {
+                            draggedMagnet.classList.remove('dragging');
+                            draggedMagnet = null;
+                        }
+                        if (currentDragOverZone) {
+                            currentDragOverZone.classList.remove('drag-over');
+                            currentDragOverZone = null;
+                        }
+                        if (autoScrollInterval) {
+                            clearInterval(autoScrollInterval);
+                            autoScrollInterval = null;
                         }
                     });
 
